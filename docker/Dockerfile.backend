@@ -1,7 +1,7 @@
 FROM node:20-slim
 
-# Install OpenSSL & build dependencies for native modules and Prisma
-RUN apt-get update && apt-get install -y openssl python3 make g++ curl && rm -rf /var/lib/apt/lists/*
+# Install OpenSSL & libssl-dev for Prisma Query Engine detection on Debian
+RUN apt-get update && apt-get install -y openssl libssl-dev python3 make g++ curl && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
