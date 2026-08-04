@@ -1,8 +1,11 @@
-FROM node:20
+FROM node:20-slim
 
-# Create OpenSSL 1.1 symlinks for Prisma Engine compatibility on OpenSSL 3 systems
-RUN ln -s /usr/lib/x86_64-linux-gnu/libssl.so.3 /usr/lib/x86_64-linux-gnu/libssl.so.1.1 || true
-RUN ln -s /usr/lib/x86_64-linux-gnu/libcrypto.so.3 /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1 || true
+# Install OpenSSL 1.1 package for 100% Prisma Query Engine compatibility
+RUN apt-get update && apt-get install -y openssl libssl-dev python3 make g++ curl wget && \
+    wget http://archive.debian.org/debian/pool/main/o/openssl/libssl1.1_1.1.1n-0+deb11u5_amd64.deb && \
+    dpkg -i libssl1.1_1.1.1n-0+deb11u5_amd64.deb && \
+    rm libssl1.1_1.1.1n-0+deb11u5_amd64.deb && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
