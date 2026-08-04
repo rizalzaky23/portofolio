@@ -64,7 +64,7 @@ export default function CMSAchievementsPage() {
     title: string; description: string; organizer: string; date: string;
     category: string; featured: boolean; displayOrder: number;
   }) => {
-    const payload = { ...data, date: new Date(data.date).toISOString() };
+    const payload = { ...data, category: data.category as import('@/types').AchievementCategory, date: new Date(data.date).toISOString() };
     let savedId: string;
 
     if (editing) {

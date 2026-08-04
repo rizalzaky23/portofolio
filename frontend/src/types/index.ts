@@ -60,6 +60,7 @@ export interface Project {
   metaTitle: string | null;
   metaDescription: string | null;
   publishedAt: string | null;
+  deletedAt?: string | null;
   createdAt: string;
   updatedAt: string;
   images: ProjectImage[];

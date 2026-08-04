@@ -17,18 +17,18 @@ const projectFormSchema = z.object({
   description:  z.string().min(1, 'Description is required'),
   problem:      z.string().min(1, 'Problem is required'),
   solution:     z.string().min(1, 'Solution is required'),
-  architecture: z.string().optional().default(''),
-  challenges:   z.string().optional().default(''),
-  lessons:      z.string().optional().default(''),
+  architecture: z.string(),
+  challenges:   z.string(),
+  lessons:      z.string(),
   status:       z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']),
   featured:     z.boolean(),
   year:         z.number().int().min(2000).max(2100),
   category:     z.string().min(1, 'Category is required'),
-  githubUrl:    z.string().url().optional().or(z.literal('')).nullable(),
-  demoUrl:      z.string().url().optional().or(z.literal('')).nullable(),
+  githubUrl:    z.string(),
+  demoUrl:      z.string(),
   techStack:    z.string().min(1, 'At least one technology is required'),
-  metaTitle:    z.string().optional(),
-  metaDescription: z.string().optional(),
+  metaTitle:    z.string(),
+  metaDescription: z.string(),
 });
 
 type ProjectFormData = z.infer<typeof projectFormSchema>;
@@ -57,18 +57,32 @@ export default function CMSProjectFormPage() {
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [uploadingCover, setUploadingCover] = useState(false);
-  const [savedId, setSavedId] = useState<string | null>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
 
   const {
     register, handleSubmit, setValue, watch, reset,
-    formState: { errors, isSubmitting, isDirty },
+    formState: { errors, isSubmitting },
   } = useForm<ProjectFormData>({
     resolver: zodResolver(projectFormSchema),
     defaultValues: {
+      title: '',
+      slug: '',
+      summary: '',
+      description: '',
+      problem: '',
+      solution: '',
+      architecture: '',
+      challenges: '',
+      lessons: '',
       status: 'DRAFT',
       featured: false,
       year: new Date().getFullYear(),
+      category: '',
+      githubUrl: '',
+      demoUrl: '',
+      techStack: '',
+      metaTitle: '',
+      metaDescription: '',
     },
   });
 
@@ -97,9 +111,9 @@ export default function CMSProjectFormPage() {
         description:  p.description,
         problem:      p.problem,
         solution:     p.solution,
-        architecture: p.architecture,
-        challenges:   p.challenges,
-        lessons:      p.lessons,
+        architecture: p.architecture ?? '',
+        challenges:   p.challenges ?? '',
+        lessons:      p.lessons ?? '',
         status:       p.status,
         featured:     p.featured,
         year:         p.year,
@@ -111,7 +125,6 @@ export default function CMSProjectFormPage() {
         metaDescription: p.metaDescription ?? '',
       });
       setCoverPreview(p.coverImage);
-      setSavedId(p.id);
     });
   }, [id, isEdit, reset]);
 
@@ -130,7 +143,6 @@ export default function CMSProjectFormPage() {
     } else {
       const res = await projectService.create(payload);
       projectId = res.data.data.id;
-      setSavedId(projectId);
     }
 
     // Upload cover if selected
