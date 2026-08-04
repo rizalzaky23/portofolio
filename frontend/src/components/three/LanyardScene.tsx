@@ -1,6 +1,5 @@
-import { useRef, useState, useMemo, RefObject } from 'react';
+import React, { useRef, useState, useMemo, Component, ReactNode, RefObject } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Line } from '@react-three/drei';
 import {
   Physics, RigidBody, BallCollider, CuboidCollider,
   useRopeJoint, RapierRigidBody,
@@ -8,11 +7,42 @@ import {
 import * as THREE from 'three';
 
 // ─── Card Dimensions ──────────────────────────────────────────────────────────
-const CARD_W = 2.1;
-const CARD_H = 3.15;
-const CARD_D = 0.04;
+const CARD_W = 2.2;
+const CARD_H = 3.3;
+const CARD_D = 0.05;
 
-// ─── Canvas Rounded Rect Helper ───────────────────────────────────────────────
+// ─── Error Boundary (Prevents ANY 3D/WASM crash from breaking the app) ────────
+interface ErrorBoundaryProps {
+  children: ReactNode;
+  fallback: ReactNode;
+}
+interface ErrorBoundaryState {
+  hasError: boolean;
+}
+
+class ThreeErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, info: React.ErrorInfo) {
+    console.error('3D Lanyard Error caught by boundary:', error, info);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+    return this.props.children;
+  }
+}
+
+// ─── Canvas Helper: Rounded Rect ──────────────────────────────────────────────
 function rrect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
   ctx.beginPath();
   ctx.moveTo(x + r, y);
@@ -54,7 +84,7 @@ function drawQR(ctx: CanvasRenderingContext2D, ox: number, oy: number, sz: numbe
 
 // ─── NFC Waves ────────────────────────────────────────────────────────────────
 function drawNFC(ctx: CanvasRenderingContext2D, cx: number, cy: number) {
-  ctx.strokeStyle = 'rgba(245,158,11,0.7)';
+  ctx.strokeStyle = 'rgba(245,158,11,0.8)';
   ctx.lineWidth = 3;
   ctx.lineCap = 'round';
   for (let i = 1; i <= 3; i++) {
@@ -69,7 +99,7 @@ function drawNFC(ctx: CanvasRenderingContext2D, cx: number, cy: number) {
   ctx.fill();
 }
 
-// ─── Premium Card Texture ─────────────────────────────────────────────────────
+// ─── Card Texture Generator ───────────────────────────────────────────────────
 function useCardTexture() {
   return useMemo(() => {
     const W = 1024, H = 1536;
@@ -81,7 +111,7 @@ function useCardTexture() {
     texture.colorSpace = THREE.SRGBColorSpace;
 
     const redraw = (withImage?: HTMLImageElement) => {
-      // ── Base Background ──────────────────────────────────────────────────
+      // Background gradient
       const bg = ctx.createLinearGradient(0, 0, 0, H);
       bg.addColorStop(0,   '#0C1220');
       bg.addColorStop(0.5, '#101827');
@@ -89,8 +119,8 @@ function useCardTexture() {
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, W, H);
 
-      // Subtle grid lines
-      ctx.strokeStyle = 'rgba(255,255,255,0.025)';
+      // Grid lines
+      ctx.strokeStyle = 'rgba(255,255,255,0.03)';
       ctx.lineWidth = 1;
       for (let x = 0; x < W; x += 48) {
         ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
@@ -99,324 +129,259 @@ function useCardTexture() {
         ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
       }
 
-      // ── Top Amber Header Strip ───────────────────────────────────────────
+      // Amber Header Strip
       const strip = ctx.createLinearGradient(0, 0, W, 0);
       strip.addColorStop(0,   '#78350F');
-      strip.addColorStop(0.3, '#B45309');
       strip.addColorStop(0.5, '#F59E0B');
-      strip.addColorStop(0.7, '#D97706');
       strip.addColorStop(1,   '#78350F');
       ctx.fillStyle = strip;
       ctx.fillRect(0, 0, W, 96);
 
-      // Header text
-      ctx.save();
       ctx.font = 'bold 30px Arial, sans-serif';
       ctx.fillStyle = '#0A0D16';
       ctx.textAlign = 'center';
-      ctx.letterSpacing = '10px';
-      ctx.fillText('⬡  IDENTITY BADGE  ⬡', W / 2, 62);
-      ctx.restore();
+      ctx.fillText('IDENTITY BADGE', W / 2, 60);
 
-      // ── Clip Badge Number ────────────────────────────────────────────────
-      ctx.fillStyle = 'rgba(255,255,255,0.06)';
-      rrect(ctx, W - 220, 20, 180, 54, 8);
-      ctx.fill();
-      ctx.font = '22px "Courier New", monospace';
-      ctx.fillStyle = 'rgba(0,0,0,0.7)';
-      ctx.textAlign = 'center';
-      ctx.fillText('#EMP-9923', W - 130, 52);
-
-      // ── Profile Photo Border ──────────────────────────────────────────────
-      const px = (W - 480) / 2, py = 120, pw = 480, ph = 480;
-
-      // Outer amber glow ring
-      const ringGrad = ctx.createRadialGradient(W/2, py + ph/2, pw/2 - 12, W/2, py + ph/2, pw/2 + 12);
-      ringGrad.addColorStop(0, 'rgba(245,158,11,0.9)');
-      ringGrad.addColorStop(1, 'rgba(120,53,15,0)');
-      ctx.fillStyle = ringGrad;
-      rrect(ctx, px - 10, py - 10, pw + 20, ph + 20, 32);
-      ctx.fill();
-
+      // Photo Frame
+      const px = (W - 460) / 2, py = 130, pw = 460, ph = 460;
       ctx.fillStyle = '#F59E0B';
-      rrect(ctx, px - 5, py - 5, pw + 10, ph + 10, 28);
+      rrect(ctx, px - 6, py - 6, pw + 12, ph + 12, 26);
       ctx.fill();
-
       ctx.fillStyle = '#0C1220';
-      rrect(ctx, px - 2, py - 2, pw + 4, ph + 4, 24);
+      rrect(ctx, px - 2, py - 2, pw + 4, ph + 4, 22);
       ctx.fill();
 
-      // Profile image or placeholder
       ctx.save();
       rrect(ctx, px, py, pw, ph, 20);
       ctx.clip();
       if (withImage) {
         ctx.drawImage(withImage, px, py, pw, ph);
       } else {
-        // Stylish avatar placeholder
-        const placeholderGrad = ctx.createLinearGradient(px, py, px, py + ph);
-        placeholderGrad.addColorStop(0, '#1E2A42');
-        placeholderGrad.addColorStop(1, '#0E1526');
-        ctx.fillStyle = placeholderGrad;
+        ctx.fillStyle = '#1E2A42';
         ctx.fillRect(px, py, pw, ph);
-        // Silhouette
-        ctx.fillStyle = '#1A2438';
-        ctx.beginPath(); ctx.arc(W/2, py + 170, 85, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath();
-        ctx.ellipse(W/2, py + ph + 20, 170, 100, 0, Math.PI, 0, true);
-        ctx.fill();
+        ctx.fillStyle = '#2A3B5C';
+        ctx.beginPath(); ctx.arc(W/2, py + 160, 80, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(W/2, py + ph + 20, 160, 90, 0, Math.PI, 0, true); ctx.fill();
       }
       ctx.restore();
 
-      // ── Name ──────────────────────────────────────────────────────────────
-      ctx.font = '900 72px Arial, sans-serif';
-      ctx.textAlign = 'center';
-      // Text shadow
-      ctx.fillStyle = 'rgba(0,0,0,0.5)';
-      ctx.fillText('RIZAL ZAKY', W / 2 + 2, 712);
+      // Name & Title
+      ctx.font = '900 70px Arial, sans-serif';
       ctx.fillStyle = '#F8FAFC';
-      ctx.fillText('RIZAL ZAKY', W / 2, 710);
+      ctx.textAlign = 'center';
+      ctx.fillText('RIZAL ZAKY', W / 2, 700);
 
-      // ── Role ──────────────────────────────────────────────────────────────
-      const roleG = ctx.createLinearGradient(200, 0, W - 200, 0);
-      roleG.addColorStop(0, '#B45309');
-      roleG.addColorStop(0.5, '#F59E0B');
-      roleG.addColorStop(1, '#B45309');
-      ctx.fillStyle = roleG;
-      ctx.font = 'bold 36px Arial, sans-serif';
-      ctx.fillText('SOFTWARE ENGINEER', W / 2, 766);
+      ctx.font = 'bold 34px Arial, sans-serif';
+      ctx.fillStyle = '#F59E0B';
+      ctx.fillText('SOFTWARE ENGINEER', W / 2, 755);
 
-      // ── Divider ───────────────────────────────────────────────────────────
-      const div = ctx.createLinearGradient(0, 0, W, 0);
-      div.addColorStop(0, 'transparent');
-      div.addColorStop(0.2, 'rgba(245,158,11,0.35)');
-      div.addColorStop(0.8, 'rgba(245,158,11,0.35)');
-      div.addColorStop(1, 'transparent');
-      ctx.strokeStyle = div;
-      ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.moveTo(80, 798); ctx.lineTo(W - 80, 798); ctx.stroke();
+      // Divider
+      ctx.strokeStyle = 'rgba(245,158,11,0.3)';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(80, 790); ctx.lineTo(W - 80, 790); ctx.stroke();
 
-      // ── Info Rows ─────────────────────────────────────────────────────────
+      // Info List
       const infos: [string, string, string][] = [
         ['ID NUMBER', 'EMP-2026-9923', '#CBD5E1'],
-        ['DEPT', 'CREATIVE DEV', '#CBD5E1'],
+        ['DEPT', 'CREATIVE DEV & ARCHITECT', '#CBD5E1'],
         ['STATUS', '● ACTIVE / AVAILABLE', '#34D399'],
       ];
 
-      infos.forEach(([label, value, vc], i) => {
-        const y = 850 + i * 62;
-        ctx.font = '24px "Courier New", monospace';
-        ctx.fillStyle = '#475569';
+      infos.forEach(([label, value, color], i) => {
+        const y = 845 + i * 60;
+        ctx.font = '22px "Courier New", monospace';
+        ctx.fillStyle = '#64748B';
         ctx.textAlign = 'left';
         ctx.fillText(label + ':', 80, y);
-        ctx.font = 'bold 26px Arial, sans-serif';
-        ctx.fillStyle = vc;
-        ctx.fillText(value, 310, y);
+        ctx.font = 'bold 24px Arial, sans-serif';
+        ctx.fillStyle = color;
+        ctx.fillText(value, 300, y);
       });
 
-      // ── Bottom Panel: QR + NFC ────────────────────────────────────────────
-      // Separator
-      ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-      ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(80, 1038); ctx.lineTo(W - 80, 1038); ctx.stroke();
-
-      // QR Box
+      // QR Code
       ctx.fillStyle = '#FFFFFF';
-      rrect(ctx, 80, 1068, 270, 270, 14);
+      rrect(ctx, 80, 1060, 260, 260, 14);
       ctx.fill();
-      drawQR(ctx, 96, 1084, 238);
+      drawQR(ctx, 96, 1076, 228);
 
-      // NFC / Social Box
-      ctx.fillStyle = 'rgba(245,158,11,0.05)';
-      rrect(ctx, 380, 1068, W - 80 - 380, 270, 14);
+      // NFC Block
+      ctx.fillStyle = 'rgba(245,158,11,0.06)';
+      rrect(ctx, 370, 1060, W - 80 - 370, 260, 14);
       ctx.fill();
-      ctx.strokeStyle = 'rgba(245,158,11,0.2)';
+      ctx.strokeStyle = 'rgba(245,158,11,0.25)';
       ctx.lineWidth = 1;
-      rrect(ctx, 380, 1068, W - 80 - 380, 270, 14);
+      rrect(ctx, 370, 1060, W - 80 - 370, 260, 14);
       ctx.stroke();
 
-      // NFC icon + label
-      drawNFC(ctx, 460, 1155);
-      ctx.fillStyle = '#CBD5E1';
+      drawNFC(ctx, 450, 1145);
+      ctx.fillStyle = '#F8FAFC';
       ctx.font = 'bold 26px Arial, sans-serif';
       ctx.textAlign = 'left';
-      ctx.fillText('NFC ENABLED', 500, 1125);
-      ctx.fillStyle = '#64748B';
+      ctx.fillText('NFC ENABLED', 490, 1120);
+      ctx.fillStyle = '#94A3B8';
       ctx.font = '22px Arial, sans-serif';
-      ctx.fillText('rizalzaky.dev', 500, 1165);
-      ctx.fillText('@rizalzaky23', 500, 1200);
-      ctx.fillText('github/rizalzaky23', 500, 1235);
+      ctx.fillText('rizalzaky.dev', 490, 1160);
+      ctx.fillText('@rizalzaky23', 490, 1195);
 
-      // Social label row
-      ctx.fillStyle = 'rgba(245,158,11,0.5)';
-      ctx.font = '20px Arial, sans-serif';
-      ctx.textAlign = 'left';
-      const socials = ['GitHub', 'LinkedIn', 'Portfolio'];
-      socials.forEach((s, i) => {
-        ctx.fillText(`• ${s}`, 400 + i * 190, 1300);
-      });
-
-      // ── Footer Strip ──────────────────────────────────────────────────────
-      const foot = ctx.createLinearGradient(0, 0, W, 0);
-      foot.addColorStop(0, '#78350F');
-      foot.addColorStop(0.5, '#B45309');
-      foot.addColorStop(1, '#78350F');
-      ctx.fillStyle = foot;
-      ctx.fillRect(0, H - 70, W, 70);
-      ctx.fillStyle = 'rgba(0,0,0,0.6)';
-      ctx.font = '21px Arial, sans-serif';
+      // Footer
+      ctx.fillStyle = '#78350F';
+      ctx.fillRect(0, H - 64, W, 64);
+      ctx.fillStyle = '#F8FAFC';
+      ctx.font = 'bold 20px Arial, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('© 2026 RIZAL ZAKY  •  FULLSTACK & CREATIVE DEV', W / 2, H - 26);
+      ctx.fillText('© 2026 RIZAL ZAKY • FULLSTACK & CREATIVE ARCHITECT', W / 2, H - 24);
 
       texture.needsUpdate = true;
     };
 
-    // Initial draw without image
     redraw();
 
-    // Load profile avatar and redraw safely
     const img = new Image();
     img.src = '/profile_avatar.png';
     img.onload = () => {
-      try {
-        redraw(img);
-      } catch (e) {
-        console.warn('Card image draw error:', e);
-      }
-    };
-    img.onerror = () => {
-      // Fallback placeholder is already drawn by redraw()
+      try { redraw(img); } catch (e) { console.warn(e); }
     };
 
     return texture;
   }, []);
 }
 
-// ─── Interactive Lanyard Physics ──────────────────────────────────────────────
+// ─── 60 FPS Direct Geometry Rope Line (Zero React State Mutating in Frame) ─────
+function DynamicRope({ refs }: { refs: RefObject<RapierRigidBody>[] }) {
+  const lineObj = useMemo(() => {
+    const geom = new THREE.BufferGeometry();
+    const mat = new THREE.LineBasicMaterial({ color: 0xF59E0B, linewidth: 3 });
+    return new THREE.Line(geom, mat);
+  }, []);
+
+  useFrame(() => {
+    if (!refs.every(r => r.current)) return;
+    const coords: number[] = [];
+    refs.forEach((r, idx) => {
+      const p = r.current!.translation();
+      if (idx === refs.length - 1) {
+        coords.push(p.x, p.y + CARD_H / 2, p.z);
+      } else {
+        coords.push(p.x, p.y, p.z);
+      }
+    });
+
+    const v3Points: THREE.Vector3[] = [];
+    for (let i = 0; i < coords.length; i += 3) {
+      v3Points.push(new THREE.Vector3(coords[i], coords[i + 1], coords[i + 2]));
+    }
+    const curve = new THREE.CatmullRomCurve3(v3Points);
+    const smoothPoints = curve.getPoints(24);
+    const flatCoords = new Float32Array(smoothPoints.length * 3);
+    smoothPoints.forEach((pt, i) => {
+      flatCoords[i * 3]     = pt.x;
+      flatCoords[i * 3 + 1] = pt.y;
+      flatCoords[i * 3 + 2] = pt.z;
+    });
+
+    lineObj.geometry.setAttribute('position', new THREE.BufferAttribute(flatCoords, 3));
+    lineObj.geometry.computeBoundingSphere();
+  });
+
+  return <primitive object={lineObj} />;
+}
+
+// ─── Interactive Physics Lanyard ──────────────────────────────────────────────
 function InteractiveLanyard() {
   const cardTexture = useCardTexture();
 
   const fixedRef = useRef<RapierRigidBody>(null);
-  const j1      = useRef<RapierRigidBody>(null);
-  const j2      = useRef<RapierRigidBody>(null);
-  const j3      = useRef<RapierRigidBody>(null);
-  const j4      = useRef<RapierRigidBody>(null);
-  const cardRef  = useRef<RapierRigidBody>(null);
+  const j1       = useRef<RapierRigidBody>(null);
+  const j2       = useRef<RapierRigidBody>(null);
+  const j3       = useRef<RapierRigidBody>(null);
+  const cardRef   = useRef<RapierRigidBody>(null);
 
-  const [ropePoints, setRopePoints] = useState<[number, number, number][]>([
-    [0, 4.5, 0], [0, 3.6, 0], [0, 2.7, 0], [0, 1.8, 0], [0, 0.9, 0], [0, 0, 0],
-  ]);
-
-  // ─── Rope Joints ──────────────────────────────────────────────────────────
+  // Rapier Rope Joints
   useRopeJoint(
     fixedRef as unknown as RefObject<RapierRigidBody>,
     j1       as unknown as RefObject<RapierRigidBody>,
-    [[0, 0, 0], [0, 0.4, 0], 0.65],
+    [[0, 0, 0], [0, 0.4, 0], 0.75],
   );
   useRopeJoint(
     j1 as unknown as RefObject<RapierRigidBody>,
     j2 as unknown as RefObject<RapierRigidBody>,
-    [[0, -0.4, 0], [0, 0.4, 0], 0.65],
+    [[0, -0.4, 0], [0, 0.4, 0], 0.75],
   );
   useRopeJoint(
     j2 as unknown as RefObject<RapierRigidBody>,
     j3 as unknown as RefObject<RapierRigidBody>,
-    [[0, -0.4, 0], [0, 0.4, 0], 0.65],
+    [[0, -0.4, 0], [0, 0.4, 0], 0.75],
   );
   useRopeJoint(
-    j3 as unknown as RefObject<RapierRigidBody>,
-    j4 as unknown as RefObject<RapierRigidBody>,
-    [[0, -0.4, 0], [0, 0.4, 0], 0.65],
-  );
-  useRopeJoint(
-    j4      as unknown as RefObject<RapierRigidBody>,
+    j3      as unknown as RefObject<RapierRigidBody>,
     cardRef as unknown as RefObject<RapierRigidBody>,
-    [[0, -0.4, 0], [0, CARD_H / 2 + 0.18, 0], 0.65],
+    [[0, -0.4, 0], [0, CARD_H / 2 + 0.15, 0], 0.75],
   );
 
-  // ─── Drag State ───────────────────────────────────────────────────────────
   const [isDragging, setIsDragging] = useState(false);
   const dragPlane = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), []);
   const raycaster = useMemo(() => new THREE.Raycaster(), []);
   const { pointer, camera } = useThree();
 
-  // ─── Frame Loop ───────────────────────────────────────────────────────────
   useFrame(() => {
-    const refs = [fixedRef, j1, j2, j3, j4, cardRef];
-    const all = refs.every(r => r.current);
-    if (!all) return;
-
-    const [p0, p1, p2, p3, p4, pC] = refs.map(r => r.current!.translation());
-    setRopePoints([
-      [p0.x, p0.y, p0.z],
-      [p1.x, p1.y, p1.z],
-      [p2.x, p2.y, p2.z],
-      [p3.x, p3.y, p3.z],
-      [p4.x, p4.y, p4.z],
-      [pC.x, pC.y + CARD_H / 2, pC.z],
-    ]);
-
+    if (!cardRef.current) return;
     if (isDragging) {
       raycaster.setFromCamera(pointer, camera);
       const hit = new THREE.Vector3();
       raycaster.ray.intersectPlane(dragPlane, hit);
       if (hit) {
-        cardRef.current!.setNextKinematicTranslation({
+        cardRef.current.setNextKinematicTranslation({
           x: hit.x,
           y: hit.y,
           z: Math.max(-1.5, Math.min(2, hit.z)),
         });
       }
     } else {
-      // Natural sway driven by mouse
-      const t = Date.now() * 0.0015;
-      const naturalSway = Math.sin(t) * 0.004;
-      cardRef.current!.applyImpulse(
-        { x: naturalSway + pointer.x * 0.003, y: 0, z: 0 },
+      const t = Date.now() * 0.002;
+      const naturalSway = Math.sin(t) * 0.003;
+      cardRef.current.applyImpulse(
+        { x: naturalSway + pointer.x * 0.002, y: 0, z: 0 },
         true,
       );
     }
   });
 
+  const allRefs = [
+    fixedRef as RefObject<RapierRigidBody>,
+    j1       as RefObject<RapierRigidBody>,
+    j2       as RefObject<RapierRigidBody>,
+    j3       as RefObject<RapierRigidBody>,
+    cardRef  as RefObject<RapierRigidBody>,
+  ];
+
   return (
     <>
-      {/* Fixed Anchor Point */}
-      <RigidBody ref={fixedRef} type="fixed" position={[0, 4.5, 0]}>
-        {/* Metallic clip top */}
+      {/* Top Fixed Anchor */}
+      <RigidBody ref={fixedRef} type="fixed" position={[0, 4.2, 0]}>
         <mesh>
-          <cylinderGeometry args={[0.07, 0.07, 0.22, 20]} />
-          <meshStandardMaterial color="#D4D4D8" metalness={1.0} roughness={0.05} />
+          <cylinderGeometry args={[0.08, 0.08, 0.2, 16]} />
+          <meshStandardMaterial color="#A1A1AA" metalness={0.9} roughness={0.1} />
         </mesh>
       </RigidBody>
 
-      {/* Rope Segments */}
-      {[
-        { ref: j1, pos: [0, 3.7, 0] as [number, number, number] },
-        { ref: j2, pos: [0, 2.8, 0] as [number, number, number] },
-        { ref: j3, pos: [0, 1.9, 0] as [number, number, number] },
-        { ref: j4, pos: [0, 1.0, 0] as [number, number, number] },
-      ].map(({ ref, pos }, i) => (
-        <RigidBody
-          key={i}
-          ref={ref}
-          position={pos}
-          type="dynamic"
-          linearDamping={2.0}
-          angularDamping={3.0}
-        >
-          <BallCollider args={[0.08]} />
-        </RigidBody>
-      ))}
+      {/* Dynamic Rope Joints */}
+      <RigidBody ref={j1} position={[0, 3.3, 0]} type="dynamic" linearDamping={2.0} angularDamping={3.0}>
+        <BallCollider args={[0.08]} />
+      </RigidBody>
+      <RigidBody ref={j2} position={[0, 2.4, 0]} type="dynamic" linearDamping={2.0} angularDamping={3.0}>
+        <BallCollider args={[0.08]} />
+      </RigidBody>
+      <RigidBody ref={j3} position={[0, 1.5, 0]} type="dynamic" linearDamping={2.0} angularDamping={3.0}>
+        <BallCollider args={[0.08]} />
+      </RigidBody>
 
-      {/* Woven Fabric Lanyard — dual-stroke technique */}
-      <Line points={ropePoints} color="#0D0D0D" lineWidth={9} />
-      <Line points={ropePoints} color="#1C1C1C" lineWidth={4} />
-      <Line points={ropePoints} color="rgba(80,60,40,0.18)" lineWidth={2} />
+      {/* Smooth 60 FPS Rope Line */}
+      <DynamicRope refs={allRefs} />
 
       {/* ID Card Badge */}
       <RigidBody
         ref={cardRef}
-        position={[0, 0.2, 0]}
+        position={[0, 0.3, 0]}
         type={isDragging ? 'kinematicPosition' : 'dynamic'}
         colliders={false}
         linearDamping={2.5}
@@ -424,26 +389,24 @@ function InteractiveLanyard() {
       >
         <CuboidCollider args={[CARD_W / 2, CARD_H / 2, CARD_D / 2]} />
         <group>
-          {/* Metallic Swivel Clip */}
-          <mesh position={[0, CARD_H / 2 + 0.13, 0]} castShadow>
-            <cylinderGeometry args={[0.1, 0.1, 0.26, 20]} />
-            <meshStandardMaterial color="#E4E4E7" metalness={1.0} roughness={0.04} />
+          {/* Clip */}
+          <mesh position={[0, CARD_H / 2 + 0.12, 0]}>
+            <cylinderGeometry args={[0.1, 0.1, 0.24, 16]} />
+            <meshStandardMaterial color="#E4E4E7" metalness={0.95} roughness={0.05} />
           </mesh>
-          <mesh position={[0, CARD_H / 2 + 0.28, 0]}>
-            <torusGeometry args={[0.09, 0.028, 16, 32]} />
-            <meshStandardMaterial color="#A1A1AA" metalness={0.95} roughness={0.08} />
+          <mesh position={[0, CARD_H / 2 + 0.25, 0]}>
+            <torusGeometry args={[0.09, 0.025, 16, 32]} />
+            <meshStandardMaterial color="#A1A1AA" metalness={0.9} roughness={0.1} />
           </mesh>
 
-          {/* Card Body (dark base) */}
+          {/* Card Body */}
           <mesh
-            castShadow
-            receiveShadow
             onPointerDown={(e) => { e.stopPropagation(); setIsDragging(true); }}
             onPointerUp={() => setIsDragging(false)}
             onPointerOut={() => setIsDragging(false)}
           >
             <boxGeometry args={[CARD_W, CARD_H, CARD_D]} />
-            <meshStandardMaterial color="#0A0F1A" roughness={0.2} metalness={0.15} />
+            <meshStandardMaterial color="#0A0F1A" roughness={0.2} metalness={0.1} />
           </mesh>
 
           {/* Card Front Texture */}
@@ -452,29 +415,17 @@ function InteractiveLanyard() {
             <meshBasicMaterial map={cardTexture} />
           </mesh>
 
-          {/* Acrylic Glass Shell */}
+          {/* Acrylic Glass Frame Overlay */}
           <mesh position={[0, 0, 0]}>
-            <boxGeometry args={[CARD_W + 0.03, CARD_H + 0.03, CARD_D + 0.015]} />
+            <boxGeometry args={[CARD_W + 0.04, CARD_H + 0.04, CARD_D + 0.012]} />
             <meshPhysicalMaterial
               transparent
-              opacity={0.35}
+              opacity={0.3}
               roughness={0.1}
               metalness={0.1}
               clearcoat={1.0}
               clearcoatRoughness={0.05}
               color="#FFFFFF"
-            />
-          </mesh>
-
-          {/* Subtle Edge Highlight */}
-          <mesh position={[0, 0, 0]}>
-            <boxGeometry args={[CARD_W + 0.055, CARD_H + 0.055, CARD_D + 0.005]} />
-            <meshStandardMaterial
-              color="#C0A860"
-              metalness={0.9}
-              roughness={0.1}
-              transparent
-              opacity={0.12}
             />
           </mesh>
         </group>
@@ -483,8 +434,8 @@ function InteractiveLanyard() {
   );
 }
 
-// ─── Subtle Volumetric Dust Particles ─────────────────────────────────────────
-function DustParticles({ count = 40 }) {
+// ─── Dust Particles ───────────────────────────────────────────────────────────
+function DustParticles({ count = 30 }) {
   const ref = useRef<THREE.Points>(null);
   const positions = useMemo(() => {
     const pos = new Float32Array(count * 3);
@@ -498,8 +449,7 @@ function DustParticles({ count = 40 }) {
 
   useFrame((_, delta) => {
     if (ref.current) {
-      ref.current.rotation.y += delta * 0.015;
-      ref.current.position.y = Math.sin(Date.now() * 0.0003) * 0.1;
+      ref.current.rotation.y += delta * 0.01;
     }
   });
 
@@ -508,66 +458,64 @@ function DustParticles({ count = 40 }) {
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
-      <pointsMaterial
-        size={0.03}
-        color="#E8A830"
-        transparent
-        opacity={0.25}
-        blending={THREE.AdditiveBlending}
-        depthWrite={false}
-      />
+      <pointsMaterial size={0.03} color="#F59E0B" transparent opacity={0.3} />
     </points>
   );
 }
 
-// ─── Main Exported Scene ──────────────────────────────────────────────────────
+// ─── Elegant 2D Fallback Badge (Renders if WebGL/Physics fails) ───────────────
+function LanyardFallback() {
+  return (
+    <div className="w-full h-full flex items-center justify-center p-6">
+      <div className="w-[260px] h-[400px] rounded-3xl p-6 bg-gradient-to-b from-[#1E293B] via-[#0F172A] to-[#0B0F19] border border-amber-500/30 shadow-2xl flex flex-col items-center justify-between text-center relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-amber-600 via-amber-400 to-amber-600" />
+        <div className="w-20 h-20 rounded-full border-2 border-amber-500 overflow-hidden mt-4">
+          <img src="/profile_avatar.png" alt="Rizal Zaky" className="w-full h-full object-cover" />
+        </div>
+        <div>
+          <h3 className="text-xl font-black text-white tracking-wide">RIZAL ZAKY</h3>
+          <p className="text-xs font-bold text-amber-500 tracking-wider uppercase mt-1">Software Engineer</p>
+          <p className="text-[10px] font-mono text-slate-400 mt-3">ID: EMP-2026-9923</p>
+        </div>
+        <div className="w-full py-2 bg-slate-900/80 rounded-xl border border-slate-800 text-[10px] font-mono text-emerald-400">
+          ● ACTIVE / AVAILABLE
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Main Exported Component ──────────────────────────────────────────────────
 export function LanyardScene() {
   return (
-    <div className="w-full h-[560px] lg:h-[700px] relative" style={{ background: 'transparent' }}>
-      <Canvas
-        camera={{ position: [0, 0.8, 7], fov: 44 }}
-        shadows
-        gl={{
-          antialias: true,
-          alpha: true,
-          premultipliedAlpha: false,
-          powerPreference: 'high-performance',
-        }}
-        style={{ background: 'transparent' }}
-        onCreated={({ gl }) => {
-          gl.setClearColor(0x000000, 0);
-        }}
-      >
-        {/* Self-contained Studio Lighting (zero remote network dependencies) */}
-        <ambientLight intensity={0.7} color="#F8FAFC" />
-        <hemisphereLight intensity={0.5} color="#F59E0B" groundColor="#0F172A" />
-        <directionalLight
-          position={[5, 8, 5]}
-          intensity={2.2}
-          color="#FFF8EE"
-          castShadow
-          shadow-mapSize={[1024, 1024]}
-        />
-        <directionalLight
-          position={[-5, 3, -4]}
-          intensity={0.8}
-          color="#38BDF8"
-        />
-        <pointLight position={[-4, 4, 3]} intensity={1.2} color="#F59E0B" />
-        <pointLight position={[4, -2, 3]} intensity={0.8} color="#7DD3FC" />
-        <pointLight position={[0, -3, 2]} intensity={0.5} color="#FCD34D" />
+    <div className="w-full h-[560px] lg:h-[700px] relative">
+      <ThreeErrorBoundary fallback={<LanyardFallback />}>
+        <Canvas
+          camera={{ position: [0, 0.8, 7], fov: 44 }}
+          gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
+          style={{ background: 'transparent' }}
+          onCreated={({ gl }) => {
+            gl.setClearColor(0x000000, 0);
+          }}
+        >
+          <ambientLight intensity={0.8} color="#F8FAFC" />
+          <directionalLight position={[5, 8, 5]} intensity={2.0} color="#FFF8EE" />
+          <directionalLight position={[-5, 3, -4]} intensity={0.6} color="#38BDF8" />
+          <pointLight position={[-4, 4, 3]} intensity={1.0} color="#F59E0B" />
+          <pointLight position={[4, -2, 3]} intensity={0.6} color="#7DD3FC" />
 
-        <Physics gravity={[0, -9.81, 0]} timeStep="vary">
-          <InteractiveLanyard />
-        </Physics>
-        <DustParticles count={40} />
-      </Canvas>
+          <Physics gravity={[0, -9.81, 0]}>
+            <InteractiveLanyard />
+          </Physics>
+          <DustParticles count={30} />
+        </Canvas>
 
-      {/* Drag hint */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2.5 px-4 py-2 rounded-full text-[11px] text-slate-400 font-mono pointer-events-none border border-white/5 bg-black/20 backdrop-blur-sm">
-        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-        Drag to interact
-      </div>
+        {/* Drag Hint */}
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2.5 px-4 py-2 rounded-full text-[11px] text-slate-400 font-mono pointer-events-none border border-white/5 bg-black/30 backdrop-blur-sm">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+          Drag badge to swing
+        </div>
+      </ThreeErrorBoundary>
     </div>
   );
 }
