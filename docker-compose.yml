@@ -60,6 +60,8 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
+      PRISMA_CLI_QUERY_ENGINE_TYPE: binary
+      PRISMA_CLIENT_ENGINE_TYPE: binary
       DATABASE_URL: mysql://${MYSQL_USER:-portfolio}:${MYSQL_PASSWORD:-portfoliopassword}@mysql:3306/${MYSQL_DATABASE:-portfolio}
       JWT_SECRET: ${JWT_SECRET}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
