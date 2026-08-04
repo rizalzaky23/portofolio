@@ -1,21 +1,26 @@
-import { type ReactNode, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { type ReactNode } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import { useAuthStore } from '@/store/authStore';
 
 // ─── Public Pages ─────────────────────────────────────────────────────────────
-const HomePage         = lazy(() => import('@/pages/Home'));
-const ProjectDetailPage = lazy(() => import('@/pages/ProjectDetail'));
+const HomePage          = lazy(() => import('@/pages/Home'));
+const ProjectDetailPage  = lazy(() => import('@/pages/ProjectDetail'));
 
 // ─── CMS Pages (lazy loaded) ──────────────────────────────────────────────────
-const CMSLoginPage      = lazy(() => import('@/cms/Login'));
-const CMSDashboardPage  = lazy(() => import('@/cms/Dashboard'));
-const CMSProjectsList   = lazy(() => import('@/cms/projects/ProjectsList'));
-const CMSProjectForm    = lazy(() => import('@/cms/projects/ProjectForm'));
-const CMSAchievements   = lazy(() => import('@/cms/achievements/AchievementsList'));
-const CMSMessages       = lazy(() => import('@/cms/messages/MessagesList'));
-const CMSMedia          = lazy(() => import('@/cms/media/MediaList'));
-const CMSSettings       = lazy(() => import('@/cms/settings/Settings'));
+const CMSLoginPage       = lazy(() => import('@/cms/Login'));
+const CMSDashboardPage   = lazy(() => import('@/cms/Dashboard'));
+const CMSProjectsList    = lazy(() => import('@/cms/projects/ProjectsList'));
+const CMSProjectForm     = lazy(() => import('@/cms/projects/ProjectForm'));
+const CMSAchievements    = lazy(() => import('@/cms/achievements/AchievementsList'));
+const CMSCertificates    = lazy(() => import('@/cms/certificates/CertificatesList'));
+const CMSExperience      = lazy(() => import('@/cms/experience/ExperienceList'));
+const CMSSkills           = lazy(() => import('@/cms/skills/SkillsList'));
+const CMSAbout           = lazy(() => import('@/cms/about/AboutForm'));
+const CMSMessages        = lazy(() => import('@/cms/messages/MessagesList'));
+const CMSMedia           = lazy(() => import('@/cms/media/MediaList'));
+const CMSSettings        = lazy(() => import('@/cms/settings/Settings'));
+const CMSUsers           = lazy(() => import('@/cms/users/UsersList'));
 
 // ─── Loading Fallback ─────────────────────────────────────────────────────────
 function PageLoader() {
@@ -39,18 +44,6 @@ function RedirectIfAuth({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
-// ─── Stub pages for unimplemented CMS routes ──────────────────────────────────
-function ComingSoon({ title }: { title: string }) {
-  const { default: CMSLayout } = require('@/cms/Layout');
-  return (
-    <CMSLayout title={title}>
-      <div className="flex items-center justify-center h-64">
-        <p className="text-[--color-muted]">{title} — coming soon.</p>
-      </div>
-    </CMSLayout>
-  );
-}
-
 export default function App() {
   return (
     <BrowserRouter>
@@ -71,51 +64,21 @@ export default function App() {
           />
 
           {/* ─── CMS Protected Routes ─────────────────────────────────────── */}
-          <Route
-            path="/admin"
-            element={
-              <RequireAuth>
-                <CMSDashboardPage />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/admin/projects"
-            element={<RequireAuth><CMSProjectsList /></RequireAuth>}
-          />
-          <Route
-            path="/admin/projects/new"
-            element={<RequireAuth><CMSProjectForm /></RequireAuth>}
-          />
-          <Route
-            path="/admin/projects/:id/edit"
-            element={<RequireAuth><CMSProjectForm /></RequireAuth>}
-          />
-          <Route
-            path="/admin/achievements"
-            element={<RequireAuth><CMSAchievements /></RequireAuth>}
-          />
-          <Route
-            path="/admin/messages"
-            element={<RequireAuth><CMSMessages /></RequireAuth>}
-          />
-          <Route
-            path="/admin/media"
-            element={<RequireAuth><CMSMedia /></RequireAuth>}
-          />
-          <Route
-            path="/admin/settings"
-            element={<RequireAuth><CMSSettings /></RequireAuth>}
-          />
+          <Route path="/admin" element={<RequireAuth><CMSDashboardPage /></RequireAuth>} />
+          <Route path="/admin/projects" element={<RequireAuth><CMSProjectsList /></RequireAuth>} />
+          <Route path="/admin/projects/new" element={<RequireAuth><CMSProjectForm /></RequireAuth>} />
+          <Route path="/admin/projects/:id/edit" element={<RequireAuth><CMSProjectForm /></RequireAuth>} />
+          <Route path="/admin/achievements" element={<RequireAuth><CMSAchievements /></RequireAuth>} />
+          <Route path="/admin/certificates" element={<RequireAuth><CMSCertificates /></RequireAuth>} />
+          <Route path="/admin/experience" element={<RequireAuth><CMSExperience /></RequireAuth>} />
+          <Route path="/admin/skills" element={<RequireAuth><CMSSkills /></RequireAuth>} />
+          <Route path="/admin/about" element={<RequireAuth><CMSAbout /></RequireAuth>} />
+          <Route path="/admin/messages" element={<RequireAuth><CMSMessages /></RequireAuth>} />
+          <Route path="/admin/media" element={<RequireAuth><CMSMedia /></RequireAuth>} />
+          <Route path="/admin/settings" element={<RequireAuth><CMSSettings /></RequireAuth>} />
+          <Route path="/admin/users" element={<RequireAuth><CMSUsers /></RequireAuth>} />
 
-          {/* Placeholder CMS routes */}
-          <Route path="/admin/certificates" element={<RequireAuth><ComingSoon title="Certificates" /></RequireAuth>} />
-          <Route path="/admin/experience"   element={<RequireAuth><ComingSoon title="Experience" /></RequireAuth>} />
-          <Route path="/admin/skills"       element={<RequireAuth><ComingSoon title="Skills" /></RequireAuth>} />
-          <Route path="/admin/about"        element={<RequireAuth><ComingSoon title="About" /></RequireAuth>} />
-          <Route path="/admin/users"        element={<RequireAuth><ComingSoon title="Users" /></RequireAuth>} />
-
-          {/* ─── Fallback ──────────────────────────────────────────────────── */}
+          {/* ─── Fallback 404 ──────────────────────────────────────────────── */}
           <Route
             path="*"
             element={
