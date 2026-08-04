@@ -1,4 +1,4 @@
-FROM node:20-bullseye
+FROM node:20-slim
 
 RUN apt-get update && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/*
 
@@ -12,13 +12,13 @@ RUN npm ci
 COPY backend/ .
 COPY prisma/ /app/prisma/
 
-# Clean old cached engine binaries and generate clean client for Debian Bullseye
-RUN rm -rf node_modules/@prisma/engines && npx prisma generate --schema=/app/prisma/schema.prisma
+# Generate Prisma client for debian-openssl-3.0.x
+RUN npx prisma generate --schema=/app/prisma/schema.prisma
 
 # Build TypeScript
 RUN npm run build
 
 EXPOSE 3000
 
-# Entrypoint: run migrations then start server
-CMD ["sh", "-c", "npx prisma migrate deploy --schema=/app/prisma/schema.prisma && node dist/server.js"]
+# Start server directly
+CMD ["node", "dist/server.js"]
