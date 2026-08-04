@@ -1,0 +1,247 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ──────────────────────────────────────────────────────────────────
+
+enum Role {
+  ADMIN
+  EDITOR
+}
+
+enum ProjectStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum MessageStatus {
+  UNREAD
+  READ
+  REPLIED
+}
+
+// ─── User ───────────────────────────────────────────────────────────────────
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(ADMIN)
+  avatar       String?
+  refreshToken String?  @db.Text
+  lastLoginAt  DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([email])
+  @@map("users")
+}
+
+// ─── Project ────────────────────────────────────────────────────────────────
+
+model Project {
+  id           String        @id @default(cuid())
+  title        String
+  slug         String        @unique
+  summary      String        @db.Text
+  description  String        @db.LongText
+  problem      String        @db.LongText
+  solution     String        @db.LongText
+  architecture String        @db.LongText
+  challenges   String        @db.LongText
+  lessons      String        @db.LongText
+  status       ProjectStatus @default(DRAFT)
+  featured     Boolean       @default(false)
+  coverImage   String?
+  year         Int
+  category     String
+  githubUrl    String?
+  demoUrl      String?
+  techStack    Json          // string[]
+  displayOrder Int           @default(0)
+
+  // SEO
+  metaTitle       String?
+  metaDescription String?
+
+  // Timestamps
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime? // soft delete
+
+  images ProjectImage[]
+
+  @@index([slug])
+  @@index([status])
+  @@index([category])
+  @@index([featured])
+  @@index([deletedAt])
+  @@map("projects")
+}
+
+model ProjectImage {
+  id        String   @id @default(cuid())
+  projectId String
+  url       String
+  alt       String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@map("project_images")
+}
+
+// ─── Achievement ────────────────────────────────────────────────────────────
+
+model Achievement {
+  id               String   @id @default(cuid())
+  title            String
+  description      String   @db.Text
+  organizer        String
+  date             DateTime
+  category         String   // competition | award | scholarship | recognition
+  certificateImage String?
+  certificatePdf   String?
+  featured         Boolean  @default(false)
+  displayOrder     Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([category])
+  @@index([featured])
+  @@map("achievements")
+}
+
+// ─── Certificate ────────────────────────────────────────────────────────────
+
+model Certificate {
+  id            String    @id @default(cuid())
+  title         String
+  issuer        String
+  credentialId  String?
+  credentialUrl String?
+  issueDate     DateTime
+  expirationDate DateTime?
+  previewUrl    String?
+  featured      Boolean   @default(false)
+  displayOrder  Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("certificates")
+}
+
+// ─── Experience ─────────────────────────────────────────────────────────────
+
+model Experience {
+  id          String    @id @default(cuid())
+  company     String
+  position    String
+  description String    @db.Text
+  logo        String?
+  website     String?
+  startDate   DateTime
+  endDate     DateTime?
+  current     Boolean   @default(false)
+  displayOrder Int      @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("experiences")
+}
+
+// ─── Skill ──────────────────────────────────────────────────────────────────
+
+model Skill {
+  id          String   @id @default(cuid())
+  name        String
+  category    String   // Frontend | Backend | Database | DevOps | Tools | Languages
+  level       Int      @default(80) // 1-100
+  icon        String?  // react-icons class name or emoji
+  displayOrder Int     @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@map("skills")
+}
+
+// ─── About ──────────────────────────────────────────────────────────────────
+
+model About {
+  id          String   @id @default(cuid())
+  biography   String   @db.LongText
+  photo       String?
+  resume      String?
+  socialLinks Json     // { github, linkedin, instagram, email }
+  techStack   Json     // string[]
+  updatedAt   DateTime @updatedAt
+
+  @@map("about")
+}
+
+// ─── Message ────────────────────────────────────────────────────────────────
+
+model Message {
+  id        String        @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  body      String        @db.Text
+  status    MessageStatus @default(UNREAD)
+  ipAddress String?
+  userAgent String?
+  deletedAt DateTime?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([status])
+  @@index([deletedAt])
+  @@map("messages")
+}
+
+// ─── Settings ───────────────────────────────────────────────────────────────
+
+model Settings {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String   @db.LongText
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([key])
+  @@map("settings")
+}
+
+// ─── Media ──────────────────────────────────────────────────────────────────
+
+model Media {
+  id           String   @id @default(cuid())
+  filename     String   // stored name in MinIO
+  originalName String   // original upload name
+  url          String   // public/signed URL
+  mimeType     String
+  size         Int      // bytes
+  folder       String   @default("general")
+  width        Int?
+  height       Int?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([folder])
+  @@index([mimeType])
+  @@map("media")
+}
