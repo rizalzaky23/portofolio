@@ -1,5 +1,8 @@
 FROM node:20
 
+ENV PRISMA_CLIENT_ENGINE_TYPE="binary"
+ENV PRISMA_CLI_QUERY_ENGINE_TYPE="binary"
+
 WORKDIR /app
 
 # Copy package specs
