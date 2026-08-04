@@ -1,18 +1,16 @@
-FROM node:20-bookworm-slim
-
-RUN apt-get update && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/*
+FROM node:20
 
 WORKDIR /app
 
-# Copy package specs
+# Copy package specs and install dependencies
 COPY backend/package*.json ./
-RUN npm ci --frozen-lockfile
+RUN npm ci
 
 # Copy backend source & prisma schema
 COPY backend/ .
 COPY prisma/ /app/prisma/
 
-# Generate Prisma client for debian-openssl-3.0.x
+# Generate Prisma client
 RUN npx prisma generate --schema=/app/prisma/schema.prisma
 
 # Build TypeScript
