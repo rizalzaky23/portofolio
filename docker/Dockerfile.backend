@@ -3,6 +3,8 @@ FROM node:20-slim
 # Install OpenSSL & libssl-dev for Prisma Query Engine detection on Debian
 RUN apt-get update && apt-get install -y openssl libssl-dev python3 make g++ curl && rm -rf /var/lib/apt/lists/*
 
+ENV PRISMA_CLI_BINARY_TARGETS="native,debian-openssl-3.0.x,linux-musl-openssl-3.0.x"
+
 WORKDIR /app
 
 # Install dependencies
