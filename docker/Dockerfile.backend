@@ -1,7 +1,4 @@
-FROM node:20
-
-ENV PRISMA_CLIENT_ENGINE_TYPE="binary"
-ENV PRISMA_CLI_QUERY_ENGINE_TYPE="binary"
+FROM node:20-bullseye
 
 WORKDIR /app
 
@@ -13,7 +10,7 @@ RUN npm ci --frozen-lockfile
 COPY backend/ .
 COPY prisma/ /app/prisma/
 
-# Generate Prisma client for all target environments
+# Generate Prisma client for Bullseye (OpenSSL 1.1)
 RUN npx prisma generate --schema=/app/prisma/schema.prisma
 
 # Build TypeScript
