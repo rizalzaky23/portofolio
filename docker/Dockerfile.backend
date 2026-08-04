@@ -1,21 +1,16 @@
-FROM node:20-slim
-
-# Install OpenSSL & libssl-dev for Prisma Query Engine detection on Debian
-RUN apt-get update && apt-get install -y openssl libssl-dev python3 make g++ curl && rm -rf /var/lib/apt/lists/*
-
-ENV PRISMA_CLI_BINARY_TARGETS="native,debian-openssl-3.0.x,linux-musl-openssl-3.0.x"
+FROM node:20
 
 WORKDIR /app
 
-# Install dependencies
+# Copy package specs
 COPY backend/package*.json ./
 RUN npm ci --frozen-lockfile
 
-# Copy source + prisma schema
+# Copy backend source & prisma schema
 COPY backend/ .
 COPY prisma/ /app/prisma/
 
-# Generate Prisma client
+# Generate Prisma client for all target environments
 RUN npx prisma generate --schema=/app/prisma/schema.prisma
 
 # Build TypeScript
