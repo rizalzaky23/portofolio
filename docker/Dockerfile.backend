@@ -1,4 +1,4 @@
-FROM node:20
+FROM node:20-bullseye
 
 WORKDIR /app
 
@@ -18,5 +18,5 @@ RUN npm run build
 
 EXPOSE 3000
 
-# Start server directly
-CMD ["node", "dist/server.js"]
+# Entrypoint: run migrations then start server
+CMD ["sh", "-c", "npx prisma migrate deploy --schema=/app/prisma/schema.prisma && node dist/server.js"]
