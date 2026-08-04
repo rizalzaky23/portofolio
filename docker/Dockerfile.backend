@@ -1,6 +1,7 @@
-FROM node:18-alpine
+FROM node:22-alpine
 
-RUN apk add --no-cache python3 make g++ curl openssl
+# Install gcompat (glibc compatibility layer for Prisma Query Engine) and openssl
+RUN apk add --no-cache python3 make g++ curl openssl gcompat
 
 WORKDIR /app
 
@@ -12,7 +13,7 @@ RUN npm ci --frozen-lockfile
 COPY backend/ .
 COPY prisma/ /app/prisma/
 
-# Generate Prisma client for Alpine
+# Generate Prisma client
 RUN npx prisma generate --schema=/app/prisma/schema.prisma
 
 # Build TypeScript
