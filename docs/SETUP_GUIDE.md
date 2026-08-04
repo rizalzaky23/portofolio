@@ -41,10 +41,11 @@
 
 ## Production Docker Deployment
 
-To launch the full containerized stack (MySQL, MinIO, Backend, Frontend, Nginx):
+To launch the full containerized stack (MySQL, MinIO, Backend, Frontend, Nginx on port 8080):
 
 ```bash
 docker compose up -d --build
 ```
 
-Access the application at `http://localhost`.
+Access the application at `http://localhost:8080` (or `http://YOUR_SERVER_IP:8080`).
+Note: Port `8080` is used to avoid port conflicts with host services such as CasaOS (which uses port `80`).
