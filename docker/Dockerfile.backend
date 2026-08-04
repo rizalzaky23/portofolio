@@ -1,11 +1,6 @@
-FROM node:20-slim
+FROM node:18-alpine
 
-# Install OpenSSL 1.1 package for 100% Prisma Query Engine compatibility
-RUN apt-get update && apt-get install -y openssl libssl-dev python3 make g++ curl wget && \
-    wget http://archive.debian.org/debian/pool/main/o/openssl/libssl1.1_1.1.1n-0+deb11u5_amd64.deb && \
-    dpkg -i libssl1.1_1.1.1n-0+deb11u5_amd64.deb && \
-    rm libssl1.1_1.1.1n-0+deb11u5_amd64.deb && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache python3 make g++ curl openssl
 
 WORKDIR /app
 
@@ -17,7 +12,7 @@ RUN npm ci --frozen-lockfile
 COPY backend/ .
 COPY prisma/ /app/prisma/
 
-# Generate Prisma client for all target environments
+# Generate Prisma client for Alpine
 RUN npx prisma generate --schema=/app/prisma/schema.prisma
 
 # Build TypeScript
