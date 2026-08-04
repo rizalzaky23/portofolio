@@ -12,8 +12,8 @@ RUN npm ci
 COPY backend/ .
 COPY prisma/ /app/prisma/
 
-# Generate Prisma client
-RUN npx prisma generate --schema=/app/prisma/schema.prisma
+# Clean old cached engine binaries and generate clean client for Debian Bullseye
+RUN rm -rf node_modules/@prisma/engines && npx prisma generate --schema=/app/prisma/schema.prisma
 
 # Build TypeScript
 RUN npm run build
