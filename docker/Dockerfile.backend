@@ -1,4 +1,8 @@
-FROM node:20-bullseye
+FROM node:20
+
+# Create OpenSSL 1.1 symlinks for Prisma Engine compatibility on OpenSSL 3 systems
+RUN ln -s /usr/lib/x86_64-linux-gnu/libssl.so.3 /usr/lib/x86_64-linux-gnu/libssl.so.1.1 || true
+RUN ln -s /usr/lib/x86_64-linux-gnu/libcrypto.so.3 /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1 || true
 
 WORKDIR /app
 
@@ -10,7 +14,7 @@ RUN npm ci --frozen-lockfile
 COPY backend/ .
 COPY prisma/ /app/prisma/
 
-# Generate Prisma client for Bullseye (OpenSSL 1.1)
+# Generate Prisma client for all target environments
 RUN npx prisma generate --schema=/app/prisma/schema.prisma
 
 # Build TypeScript
