@@ -11,9 +11,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout the repository first
       - name: 📦 Checkout
         uses: actions/checkout@v4
 
+      # (Optional) Explicitly set Node.js to version 24 to silence deprecation warnings
+      - name: 🟢 Set up Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      # Prepare SSH key for remote connection
       - name: 🔑 Setup SSH
         run: |
           mkdir -p ~/.ssh
@@ -21,14 +29,26 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
 
-      - name: 🚀 Deploy via SSH
+      # Verify that the deploy script exists and is executable on the remote server
+      - name: ✅ Verify deploy script exists
         run: |
           ssh -i ~/.ssh/deploy_key \
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
-            "bash /home/rizal/portofolio/deploy.sh 2>&1"
+            "test -x /home/rizal/portofolio/deploy.sh || { echo 'Deploy script not found or not executable'; exit 1; }"
 
+      # Deploy via SSH with debugging enabled (set -e stops on first error, -x prints commands)
+      - name: 🚀 Deploy via SSH
+        run: |
+          set -e
+          ssh -i ~/.ssh/deploy_key \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+            "bash -x /home/rizal/portofolio/deploy.sh"
+
+      # Notify success if deployment succeeded
       - name: ✅ Notify Success
         if: success()
         run: echo "Deploy berhasil ke ${{ secrets.SSH_HOST }}!"
