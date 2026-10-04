@@ -202,30 +202,21 @@ const certificates: Certificate[] = [
 const competitions: Competition[] = [
   {
     id: 1,
-    title: "Techsprint Innovation Cup",
-    image: "https://images.pexels.com/photos/7413915/pexels-photo-7413915.jpeg?auto=compress&cs=tinysrgb&w=600",
-    organizer: "Tech Innovation Forum",
-    year: "2026",
-    achievement: "Finalist",
-    certificateLink: "#",
+    title: "LKS SMK Tingkat Kabupaten Klaten — Cloud Computing",
+    image: "/images/lomba/Sertifikat_RizalZakyF_0069728882.jpg",
+    organizer: "MKKS SMK Kabupaten Klaten",
+    year: "2023",
+    achievement: "Juara 2",
+    certificateLink: "/images/lomba/Sertifikat_RizalZakyF_0069728882.jpg",
   },
   {
     id: 2,
-    title: "Business Model Canvas Competition",
-    image: "https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=600",
-    organizer: "National Entrepreneurship Council",
-    year: "2025",
-    achievement: "Participant",
-    certificateLink: "#",
-  },
-  {
-    id: 3,
-    title: "Hackathon Web Development Challenge",
-    image: "https://images.pexels.com/photos/7108/notebook-hero-workspace-handmade.jpg?auto=compress&cs=tinysrgb&w=600",
-    organizer: "DevCommunity Indonesia",
-    year: "2025",
-    achievement: "Top 10",
-    certificateLink: "#",
+    title: "Olimpiade Jaringan MikroTik (OJM) SMK-TKJ Tingkat Nasional",
+    image: "/images/lomba/sertifikat-ojm-1872-6c66badab10c61f705b0.jpg",
+    organizer: "PT Citraweb Solusi Teknologi & MikroTik",
+    year: "2023",
+    achievement: "Peserta Nasional",
+    certificateLink: "/images/lomba/sertifikat-ojm-1872-6c66badab10c61f705b0.jpg",
   },
 ];
 
@@ -697,14 +688,24 @@ const CertificateCard = ({ cert, index, onImageClick }: { cert: Certificate; ind
   </motion.div>
 );
 
-const CompetitionCard = ({ comp, index, onImageClick }: { comp: Competition; index: number; onImageClick: (image: string, alt: string) => void }) => (
+const CompetitionCard = ({
+  comp,
+  index,
+  allImages,
+  onImageClick,
+}: {
+  comp: Competition;
+  index: number;
+  allImages: string[];
+  onImageClick: (image: string, alt: string, images?: string[], initialIndex?: number) => void;
+}) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: index * 0.04, duration: 0.3 }}
   >
     <MagicCard
-      className="h-full rounded-[2rem] border border-border/80 bg-card/80 overflow-hidden group"
+      className="h-full rounded-[2rem] border border-border/80 bg-card/80 overflow-hidden group flex flex-col"
       gradientSize={280}
       gradientColor="rgba(245, 158, 11, 0.08)"
       gradientFrom="#f59e0b"
@@ -712,17 +713,17 @@ const CompetitionCard = ({ comp, index, onImageClick }: { comp: Competition; ind
     >
       {/* Image */}
       <div
-        className="relative h-48 overflow-hidden bg-muted/30 cursor-pointer"
-        onClick={() => onImageClick(comp.image, comp.title)}
+        className="relative h-56 overflow-hidden bg-muted/30 cursor-pointer"
+        onClick={() => onImageClick(comp.image, comp.title, allImages, index)}
       >
         <img
           src={comp.image}
           alt={comp.title}
           loading="lazy"
           decoding="async"
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100"
+          className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105 opacity-90 group-hover:opacity-100"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent pointer-events-none" />
         {/* Zoom hint */}
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
           <div className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center">
@@ -741,7 +742,7 @@ const CompetitionCard = ({ comp, index, onImageClick }: { comp: Competition; ind
         )}
       </div>
       {/* Content */}
-      <div className="p-6 flex flex-col gap-3">
+      <div className="p-6 flex flex-col gap-3 flex-1">
         <h3 className="text-base font-bold text-foreground tracking-tight group-hover:text-amber-400 transition-colors leading-snug">
           {comp.title}
         </h3>
@@ -755,14 +756,15 @@ const CompetitionCard = ({ comp, index, onImageClick }: { comp: Competition; ind
             <span>Year: <span className="text-foreground/80 font-medium">{comp.year}</span></span>
           </div>
         </div>
-        {/* Link */}
-        {comp.certificateLink && (
-          <div className="mt-auto pt-3 border-t border-border/40">
-            <a href={comp.certificateLink} className="inline-flex items-center gap-1 text-xs font-bold text-amber-500 hover:text-foreground transition-colors">
-              View Certificate <ArrowUpRight className="w-3 h-3" />
-            </a>
-          </div>
-        )}
+        {/* View Certificate */}
+        <div className="mt-auto pt-3 border-t border-border/40">
+          <button
+            onClick={() => onImageClick(comp.image, comp.title, allImages, index)}
+            className="inline-flex items-center gap-1 text-xs font-bold text-amber-500 hover:text-foreground transition-colors cursor-pointer"
+          >
+            View Certificate <ArrowUpRight className="w-3 h-3" />
+          </button>
+        </div>
       </div>
     </MagicCard>
   </motion.div>
@@ -890,10 +892,16 @@ export const ProjectsSection = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto"
           >
             {competitions.map((comp, i) => (
-              <CompetitionCard key={comp.id} comp={comp} index={i} onImageClick={openLightbox} />
+              <CompetitionCard
+                key={comp.id}
+                comp={comp}
+                index={i}
+                allImages={competitions.map((c) => c.image)}
+                onImageClick={openLightbox}
+              />
             ))}
           </motion.div>
         )}
