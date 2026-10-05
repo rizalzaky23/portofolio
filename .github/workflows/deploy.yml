@@ -5,50 +5,63 @@ on:
     branches:
       - main
 
+concurrency:
+  group: deploy-portofolio
+  cancel-in-progress: true
+
+env:
+  DEPLOY_PATH: /home/rizal/portofolio
+
 jobs:
   deploy:
-    name: Deploy to Server
+    name: Deploy to Server via Cloudflare Tunnel
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository first
-      - name: 📦 Checkout
-        uses: actions/checkout@v4
+      - name: 📥 Install cloudflared
+        run: |
+          curl -fsSL -o /tmp/cloudflared \
+            https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64
+          sudo install -m 755 /tmp/cloudflared /usr/local/bin/cloudflared
+          cloudflared --version
 
-      # (Optional) Explicitly set Node.js to version 24 to silence deprecation warnings
-      - name: 🟢 Set up Node 24
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-
-      # Prepare SSH key for remote connection
-      - name: 🔑 Setup SSH
+      - name: 🔑 Setup SSH via Tunnel
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+          cat > ~/.ssh/config <<'EOF'
+          Host deploy-target
+            HostName ${{ secrets.SSH_HOST }}
+            User ${{ secrets.SSH_USER }}
+            IdentityFile ~/.ssh/deploy_key
+            IdentitiesOnly yes
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+            ConnectTimeout 20
+            ProxyCommand cloudflared access ssh --hostname %h
+          EOF
+          chmod 600 ~/.ssh/config
 
-      # Verify that the deploy script exists and is executable on the remote server
-      - name: ✅ Verify deploy script exists
+      - name: 🔎 Test Connection
         run: |
-          ssh -i ~/.ssh/deploy_key \
-            -o StrictHostKeyChecking=no \
-            -o UserKnownHostsFile=/dev/null \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
-            "test -x /home/rizal/portofolio/deploy.sh || { echo 'Deploy script not found or not executable'; exit 1; }"
+          ssh deploy-target "echo 'Connected to' \$(hostname) as \$(whoami)"
 
-      # Deploy via SSH with debugging enabled (set -e stops on first error, -x prints commands)
-      - name: 🚀 Deploy via SSH
+      - name: ✅ Verify deploy script
         run: |
-          set -e
-          ssh -i ~/.ssh/deploy_key \
-            -o StrictHostKeyChecking=no \
-            -o UserKnownHostsFile=/dev/null \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
-            "bash -x /home/rizal/portofolio/deploy.sh"
+          ssh deploy-target \
+            "test -x $DEPLOY_PATH/deploy.sh || { echo 'deploy.sh not found or not executable at $DEPLOY_PATH'; exit 1; }"
 
-      # Notify success if deployment succeeded
+      - name: 🚀 Deploy
+        run: |
+          ssh deploy-target "bash -x $DEPLOY_PATH/deploy.sh"
+
       - name: ✅ Notify Success
         if: success()
-        run: echo "Deploy berhasil ke ${{ secrets.SSH_HOST }}!"
+        run: |
+          {
+            echo "## ✅ Deploy Portofolio Berhasil"
+            echo "Server: \`${{ secrets.SSH_HOST }}\`"
+            echo "Commit: \`${{ github.sha }}\`"
+            echo "Waktu: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          } >> "$GITHUB_STEP_SUMMARY"
