@@ -46,7 +46,7 @@ const projects: Project[] = [
     id: 1,
     title: "Fleet Operations Management System",
     description:
-      "Aplikasi enterprise modern berbasis Flutter yang berjalan lancar di 3 platform (Android, Desktop, dan Web). Memudahkan pemantauan operasional armada kendaraan secara real-time, pencatatan j[...]
+      "Aplikasi enterprise modern berbasis Flutter yang berjalan lancar di 3 platform (Android, Desktop, dan Web). Memudahkan pemantauan operasional armada kendaraan secara real-time.",
     images: [
       "/images/project/fleet_app/Screenshot From 2026-09-07 18-46-18.png",
       "/images/project/fleet_app/Screenshot From 2026-09-07 18-46-09.png",
@@ -60,7 +60,7 @@ const projects: Project[] = [
     id: 2,
     title: "Kavier POS (Point of Sale) & Cashier System",
     description:
-      "Sistem aplikasi kasir pintar berbasis Flutter multiplatform yang dapat dijalankan di 3 platform (Android, Desktop, dan Web). Dilengkapi kemampuan mode offline dengan cache lisensi lokal, tr[...]
+      "Sistem aplikasi kasir pintar berbasis Flutter multiplatform yang dapat dijalankan di 3 platform (Android, Desktop, dan Web). Dilengkapi kemampuan mode offline dengan cache lisensi lokal.",
     images: [
       "/images/project/kavier/Screenshot From 2026-09-07 19-19-33.png",
       "/images/project/kavier/Screenshot From 2026-09-07 19-19-40.png",
@@ -98,7 +98,7 @@ const projects: Project[] = [
   {
     id: 5,
     title: "VeternityBeraksi.com",
-    description: "VeternityBeraksi.com web app built with Next.js 16.2.6 (App Router, Turbopack), TypeScript 5.8, Drizzle ORM + PostgreSQL (Neon), Kinde Auth, Zod 4, Tailwind CSS v4, Resend, Reac[...]
+    description: "VeternityBeraksi.com web app built with Next.js 16.2.6 (App Router, Turbopack), TypeScript 5.8, Drizzle ORM + PostgreSQL (Neon), Kinde Auth, Zod 4, Tailwind CSS v4, Resend, and React.",
     images: [
       "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.20.00.png",
       "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.20.24.png",
@@ -332,7 +332,7 @@ const Lightbox = ({ image, images, currentIndex = 0, onNavigate, alt, onClose }:
 
           {/* Close button */}
           <motion.button
-            className="absolute top-6 right-6 z-30 w-11 h-11 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-white/25 transition-all duration-200"
+            className="absolute top-6 right-6 z-30 w-11 h-11 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-white/25 transition-colors"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
@@ -350,7 +350,7 @@ const Lightbox = ({ image, images, currentIndex = 0, onNavigate, alt, onClose }:
           {hasMultiple && onNavigate && images && (
             <>
               <button
-                className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-30 w-11 h-11 md:w-12 md:h-12 rounded-full bg-black/60 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-white/10 transition-all duration-200"
+                className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-30 w-11 h-11 md:w-12 md:h-12 rounded-full bg-black/60 backdrop-blur-md border border-white/20 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
                 onClick={(e) => {
                   e.stopPropagation();
                   onNavigate((currentIndex - 1 + images.length) % images.length);
@@ -360,7 +360,7 @@ const Lightbox = ({ image, images, currentIndex = 0, onNavigate, alt, onClose }:
                 <ChevronLeft className="w-6 h-6" />
               </button>
               <button
-                className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-30 w-11 h-11 md:w-12 md:h-12 rounded-full bg-black/60 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-white/10 transition-all duration-200"
+                className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-30 w-11 h-11 md:w-12 md:h-12 rounded-full bg-black/60 backdrop-blur-md border border-white/20 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
                 onClick={(e) => {
                   e.stopPropagation();
                   onNavigate((currentIndex + 1) % images.length);
@@ -515,14 +515,14 @@ const ProjectCard = ({
             <>
               <button
                 onClick={handlePrev}
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300"
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
                 aria-label="Previous slide"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
               <button
                 onClick={handleNext}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300"
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
                 aria-label="Next slide"
               >
                 <ChevronRight className="w-4 h-4" />
@@ -557,7 +557,7 @@ const ProjectCard = ({
           )}
 
           {/* Flutter Multiplatform Badge */}
-          <div className="absolute top-3 left-3 px-2.5 py-0.5 rounded-full bg-sky-500/90 backdrop-blur-md text-[10px] font-extrabold text-white uppercase tracking-wider shadow-md z-10 flex items-center gap-1">
+          <div className="absolute top-3 left-3 px-2.5 py-0.5 rounded-full bg-sky-500/90 backdrop-blur-md text-[10px] font-extrabold text-white uppercase tracking-wider shadow-md z-10 flex items-center gap-1.5">
             <Layers className="w-3 h-3" />
             Flutter Multiplatform
           </div>
@@ -663,7 +663,7 @@ const CertificateCard = ({ cert, index, onImageClick }: { cert: Certificate; ind
           <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent pointer-events-none" />
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/pdf:opacity-100 transition-opacity duration-300 pointer-events-none">
             <div className="flex items-center gap-2 bg-black/50 backdrop-blur-sm rounded-full px-4 py-2">
-              <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v0" /></svg>
+              <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
               <span className="text-white text-xs font-semibold">Open PDF</span>
             </div>
           </div>
