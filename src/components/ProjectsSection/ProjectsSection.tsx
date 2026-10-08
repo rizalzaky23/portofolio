@@ -70,6 +70,53 @@ const projects: Project[] = [
     ],
     tags: ["Flutter", "Dart", "Android", "Desktop", "Web", "Cross-Platform", "POS System"],
   },
+  {
+    id: 3,
+    title: "UrFarm",
+    description: "UrFarm project showcase.",
+    images: [
+      "/images/project/UrFarm/image1.png",
+      "/images/project/UrFarm/image2.png",
+      "/images/project/UrFarm/image3.png",
+      "/images/project/UrFarm/image4.png"
+    ],
+    tags: ["Agriculture", "Web", "React"]
+  },
+  {
+    id: 4,
+    title: "SAMUDRA",
+    description: "SAMUDRA project showcase.",
+    images: [
+      "/images/project/SAMUDRA/WhatsApp Image 2026-10-08 at 10.31.41.jpeg",
+      "/images/project/SAMUDRA/WhatsApp Image 2026-10-08 at 10.31.41 (2).jpeg",
+      "/images/project/SAMUDRA/WhatsApp Image 2026-10-08 at 10.31.42.jpeg",
+      "/images/project/SAMUDRA/WhatsApp Image 2026-10-08 at 10.31.42 (1).jpeg",
+      "/images/project/SAMUDRA/WhatsApp Image 2026-10-08 at 10.31.42 (2).jpeg"
+    ],
+    tags: ["Marine", "App", "React"]
+  },
+  {
+    id: 5,
+    title: "VeternityBeraksi.com",
+    description: "VeternityBeraksi project showcase.",
+    images: [
+      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.20.00.png",
+      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.20.24.png",
+      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.20.36.png",
+      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.20.58.png",
+      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.21.30.png",
+      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.21.41.png",
+      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.21.50.png",
+      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.22.11.png",
+      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.22.20.png",
+      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.22.27.png",
+      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.22.36.png",
+      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.22.44.png",
+      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.22.51.png",
+      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.22.59.png"
+    ],
+    tags: ["Education", "Web", "React"]
+  },
 ];
 
 const certificates: Certificate[] = [

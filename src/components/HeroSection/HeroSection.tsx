@@ -236,7 +236,7 @@ export const HeroSection = () => {
                 {/* Profile Photo with Dual Glowing Ring */}
                 <div className="mt-1 relative w-28 h-28 rounded-full p-[2px] bg-gradient-to-tr from-emerald-400 via-cyan-400 to-purple-400 shadow-[0_0_24px_rgba(34,197,94,0.5)] border border-green-400/30 overflow-hidden group z-10">
                   <img 
-                    src="/public/images/profil.png" 
+                    src="/images/profil.png" 
                     alt="Rizal Zaky" 
                     className="w-full h-full object-cover rounded-full filter contrast-105"
                     loading="eager"
