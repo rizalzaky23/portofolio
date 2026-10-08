@@ -73,7 +73,7 @@ const projects: Project[] = [
   {
     id: 3,
     title: "UrFarm",
-    description: "UrFarm web application built with PHP, MySQL, and Tailwind CSS.",
+    description: "UrFarm web application built with PHP, MySQL, and Tailwind CSS. Agricultural management system with comprehensive features.",
     images: [
       "/images/project/UrFarm/image1.png",
       "/images/project/UrFarm/image2.png",
@@ -85,7 +85,7 @@ const projects: Project[] = [
   {
     id: 4,
     title: "SAMUDRA",
-    description: "SAMUDRA mobile app built with Flutter for Android and iOS.",
+    description: "SAMUDRA mobile app built with Flutter for Android and iOS. Feature-rich mobile application with modern UI/UX design.",
     images: [
       "/images/project/SAMUDRA/WhatsApp Image 2026-10-08 at 10.31.41.jpeg",
       "/images/project/SAMUDRA/WhatsApp Image 2026-10-08 at 10.31.41 (2).jpeg",
@@ -556,28 +556,32 @@ const ProjectCard = ({
             </div>
           )}
 
-          {/* Flutter Multiplatform Badge */}
-          <div className="absolute top-3 left-3 px-2.5 py-0.5 rounded-full bg-sky-500/90 backdrop-blur-md text-[10px] font-extrabold text-white uppercase tracking-wider shadow-md z-10 flex items-center gap-1.5">
-            <Layers className="w-3 h-3" />
-            Flutter Multiplatform
-          </div>
+          {/* Flutter Multiplatform Badge - Only for Flutter projects */}
+          {project.tags.includes("Flutter") && (
+            <div className="absolute top-3 left-3 px-2.5 py-0.5 rounded-full bg-sky-500/90 backdrop-blur-md text-[10px] font-extrabold text-white uppercase tracking-wider shadow-md z-10 flex items-center gap-1.5">
+              <Layers className="w-3 h-3" />
+              Flutter Multiplatform
+            </div>
+          )}
         </div>
 
         {/* Content */}
         <div className="p-6 md:p-7 flex flex-col gap-4 flex-1">
-          {/* Platforms Support Header */}
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-[11px] font-bold text-muted-foreground mr-1 uppercase tracking-wider">3 Platforms:</span>
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-[11px] font-semibold">
-              <Smartphone className="w-3 h-3" /> Android
-            </span>
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 text-[11px] font-semibold">
-              <Monitor className="w-3 h-3" /> Desktop
-            </span>
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 text-[11px] font-semibold">
-              <Globe className="w-3 h-3" /> Web
-            </span>
-          </div>
+          {/* Platforms Support Header - Only for Flutter projects */}
+          {project.tags.includes("Flutter") && (
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="text-[11px] font-bold text-muted-foreground mr-1 uppercase tracking-wider">3 Platforms:</span>
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-[11px] font-semibold">
+                <Smartphone className="w-3 h-3" /> Android
+              </span>
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 text-[11px] font-semibold">
+                <Monitor className="w-3 h-3" /> Desktop
+              </span>
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 text-[11px] font-semibold">
+                <Globe className="w-3 h-3" /> Web
+              </span>
+            </div>
+          )}
 
           <h3 className="text-xl font-bold text-foreground tracking-tight group-hover:text-primary transition-colors">
             {project.title}
@@ -909,7 +913,7 @@ export const ProjectsSection = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto"
+            className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full"
           >
             {projects.map((project, i) => (
               <ProjectCard key={project.id} project={project} index={i} onImageClick={openLightbox} />
