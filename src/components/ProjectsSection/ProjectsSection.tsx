@@ -73,19 +73,19 @@ const projects: Project[] = [
   {
     id: 3,
     title: "UrFarm",
-    description: "UrFarm project showcase.",
+    description: "UrFarm web application built with PHP, MySQL, and Tailwind CSS.",
     images: [
       "/images/project/UrFarm/image1.png",
       "/images/project/UrFarm/image2.png",
       "/images/project/UrFarm/image3.png",
       "/images/project/UrFarm/image4.png"
     ],
-    tags: ["Agriculture", "Web", "React"]
-  },
+    tags: ["PHP", "Web", "TailwindCSS", "MySQL"]
+  }
   {
     id: 4,
     title: "SAMUDRA",
-    description: "SAMUDRA project showcase.",
+    description: "SAMUDRA mobile app built with Flutter for Android and iOS.",
     images: [
       "/images/project/SAMUDRA/WhatsApp Image 2026-10-08 at 10.31.41.jpeg",
       "/images/project/SAMUDRA/WhatsApp Image 2026-10-08 at 10.31.41 (2).jpeg",
@@ -93,12 +93,12 @@ const projects: Project[] = [
       "/images/project/SAMUDRA/WhatsApp Image 2026-10-08 at 10.31.42 (1).jpeg",
       "/images/project/SAMUDRA/WhatsApp Image 2026-10-08 at 10.31.42 (2).jpeg"
     ],
-    tags: ["Marine", "App", "React"]
+    tags: ["Flutter","Mobile","App"]
   },
   {
     id: 5,
     title: "VeternityBeraksi.com",
-    description: "VeternityBeraksi project showcase.",
+    description: "VeternityBeraksi.com web app built with Next.js 16.2.6 (App Router, Turbopack), TypeScript 5.8, Drizzle ORM + PostgreSQL (Neon), Kinde Auth, Zod 4, Tailwind CSS v4, Resend, React Email, and S3-compatible storage.",
     images: [
       "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.20.00.png",
       "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.20.24.png",
