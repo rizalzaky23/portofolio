@@ -46,7 +46,7 @@ const projects: Project[] = [
     id: 1,
     title: "Fleet Operations Management System",
     description:
-      "Aplikasi enterprise modern berbasis Flutter yang berjalan lancar di 3 platform (Android, Desktop, dan Web). Memudahkan pemantauan operasional armada kendaraan secara real-time.",
+      "A modern enterprise application built with Flutter that runs smoothly across 3 platforms (Android, Desktop, and Web). It simplifies real-time monitoring of vehicle fleet operations.",
     images: [
       "/images/project/fleet_app/Screenshot From 2026-09-07 18-46-18.png",
       "/images/project/fleet_app/Screenshot From 2026-09-07 18-46-09.png",
@@ -60,7 +60,7 @@ const projects: Project[] = [
     id: 2,
     title: "Kavier POS (Point of Sale) & Cashier System",
     description:
-      "Sistem aplikasi kasir pintar berbasis Flutter multiplatform yang dapat dijalankan di 3 platform (Android, Desktop, dan Web). Dilengkapi kemampuan mode offline dengan cache lisensi lokal.",
+      "A smart multiplatform cashier application built with Flutter that runs on 3 platforms (Android, Desktop, and Web). Equipped with offline mode capability using a local license cache.",
     images: [
       "/images/project/kavier/Screenshot From 2026-09-07 19-19-33.png",
       "/images/project/kavier/Screenshot From 2026-09-07 19-19-40.png",
@@ -85,7 +85,7 @@ const projects: Project[] = [
   {
     id: 4,
     title: "SAMUDRA",
-    description: "SAMUDRA mobile app built with Flutter for Android and iOS. Feature-rich mobile application with modern UI/UX design.",
+    description: "SAMUDRA is a mitigation application built with Flutter for Android and iOS. A feature-rich mobile application with modern UI/UX design.",
     images: [
       "/images/project/SAMUDRA/WhatsApp Image 2026-10-08 at 10.31.41.jpeg",
       "/images/project/SAMUDRA/WhatsApp Image 2026-10-08 at 10.31.41 (2).jpeg",
@@ -98,7 +98,7 @@ const projects: Project[] = [
   {
     id: 5,
     title: "VeternityBeraksi.com",
-    description: "VeternityBeraksi.com web app built with Next.js 16.2.6 (App Router, Turbopack), TypeScript 5.8, Drizzle ORM + PostgreSQL (Neon), Kinde Auth, Zod 4, Tailwind CSS v4, Resend, and React.",
+    description: "VeternityBeraksi.com is a competition web app, a collaboration between the Informatics and Information Systems programs at UPN Veteran Yogyakarta. Built with Next.js 16.2.6 (App Router, Turbopack), TypeScript 5.8, Drizzle ORM + PostgreSQL (Neon), Kinde Auth, Zod 4, Tailwind CSS v4, Resend, and React.",
     images: [
       "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.20.00.png",
       "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.20.24.png",
@@ -478,7 +478,7 @@ const ProjectCard = ({
           onClick={() =>
             onImageClick(
               project.images[currentSlide],
-              `${project.title} (Foto ${currentSlide + 1})`,
+                  `${project.title} (Photo ${currentSlide + 1})`,
               project.images,
               currentSlide
             )
@@ -604,14 +604,14 @@ const ProjectCard = ({
               onClick={() =>
                 onImageClick(
                   project.images[currentSlide],
-                  `${project.title} (Foto ${currentSlide + 1})`,
+              `${project.title} (Photo ${currentSlide + 1})`,
                   project.images,
                   currentSlide
                 )
               }
               className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:text-foreground transition-colors group/link cursor-pointer"
             >
-              Lihat Semua Screenshot ({project.images.length} foto)
+              View All Screenshots ({project.images.length} photos)
               <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5" />
             </button>
           </div>
