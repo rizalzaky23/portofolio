@@ -17,6 +17,6 @@ echo "[3/3] Build and deploy Docker..."
 # Pull latest images (if any)
 docker compose pull
 # Rebuild containers without cache and recreate
-docker compose up -d --build --force-recreate --pull always
+docker compose up -d --build --no-cache --force-recreate --pull always --force-recreate --pull always
 
 echo "✅ Deploy finished"
