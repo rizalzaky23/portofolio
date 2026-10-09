@@ -52,9 +52,21 @@ jobs:
           ssh deploy-target \
             "test -x $DEPLOY_PATH/deploy.sh || { echo 'deploy.sh not found or not executable at $DEPLOY_PATH'; exit 1; }"
 
+      - name: 🚀 Sync code
+        run: |
+          ssh deploy-target "
+            set -e
+            cd $DEPLOY_PATH
+            echo '[0/3] Sync latest code...'
+            git fetch --depth=1 origin main
+            git clean -fd
+            git reset --hard origin/main
+            git clean -fd
+          "
+
       - name: 🚀 Deploy
         run: |
-          ssh deploy-target "bash -x $DEPLOY_PATH/deploy.sh"
+          ssh deploy-target "cd $DEPLOY_PATH && bash -x $DEPLOY_PATH/deploy.sh"
 
       - name: ✅ Notify Success
         if: success()
