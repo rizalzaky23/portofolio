@@ -6,23 +6,23 @@ DEPLOY_PATH="${DEPLOY_PATH:-/home/rizal/portofolio}"
 echo "🚀 Deploying to $DEPLOY_PATH"
 cd "$DEPLOY_PATH"
 
-# Preserve this script before cleaning
+# Preserve this script before cleaning (optional backup)
 SCRIPT_NAME="$(basename "$0")"
 TMP_SCRIPT="/tmp/${SCRIPT_NAME}.backup"
 cp "$SCRIPT_NAME" "$TMP_SCRIPT"
 
-# Remove any existing deploy script files to avoid merge conflict
-rm -f "$SCRIPT_NAME" "${SCRIPT_NAME}.old"
+# Delete the currently running deploy script to avoid merge conflict
+rm -f "$SCRIPT_NAME"
+
 
 # Pull latest code safely
-echo "[1/5] Pull latest code..."
-git fetch --depth=1 origin main
-# Reset will overwrite tracked files, including deploy.sh, but we have backup
-git reset --hard origin/main
+ echo "[1/5] Pull latest code..."
+ git fetch --depth=1 origin main
+ git reset --hard origin/main
 
-# Restore the script from the backup
-cp "$TMP_SCRIPT" "$SCRIPT_NAME" || true
-rm -f "$TMP_SCRIPT"
+# Restore script from backup (in case it was removed by clean)
+ cp "$TMP_SCRIPT" "$SCRIPT_NAME" || true
+ rm -f "$TMP_SCRIPT"
 
 # Install dependencies
 echo "[2/5] Install dependencies..."
