@@ -15,8 +15,9 @@ npm ci
 
 echo "[3/3] Build and deploy Docker..."
 # Pull latest images (if any)
-docker compose pull
+# docker compose pull
 # Rebuild containers without cache and recreate
-docker compose up -d --build --no-cache --force-recreate --pull always --force-recreate --pull always
+docker compose build --no-cache
+docker compose up -d --force-recreate
 
 echo "✅ Deploy finished"
