@@ -11,11 +11,8 @@ SCRIPT_NAME="$(basename "$0")"
 TMP_SCRIPT="/tmp/${SCRIPT_NAME}.backup"
 cp "$SCRIPT_NAME" "$TMP_SCRIPT"
 
-# Remove the currently executing script (we have a backup)
-rm -f "$SCRIPT_NAME"
-# After pulling, restore the script from the backup
-cp "$TMP_SCRIPT" "$SCRIPT_NAME" || true
-rm -f "$TMP_SCRIPT"
+# Remove any existing deploy script files to avoid merge conflict
+rm -f "$SCRIPT_NAME" "${SCRIPT_NAME}.old"
 
 # Pull latest code safely
 echo "[1/5] Pull latest code..."
@@ -23,7 +20,7 @@ git fetch --depth=1 origin main
 # Reset will overwrite tracked files, including deploy.sh, but we have backup
 git reset --hard origin/main
 
-# Restore the script if needed (optional)
+# Restore the script from the backup
 cp "$TMP_SCRIPT" "$SCRIPT_NAME" || true
 rm -f "$TMP_SCRIPT"
 
