@@ -6,16 +6,19 @@ DEPLOY_PATH="${DEPLOY_PATH:-/home/rizal/portofolio}"
 echo "🚀 Deploying to $DEPLOY_PATH"
 cd "$DEPLOY_PATH"
 
-# If this is the first run, move the script out of the repo, reset, then re‑exec the fresh script
-if [ -z "$DEPLOY_SCRIPT_RAN" ]; then
-  export DEPLOY_SCRIPT_RAN=1
+# First run: remove the currently executing script so git can reset cleanly
+if [ -z "$DEPLOY_RESTARTED" ]; then
+  export DEPLOY_RESTARTED=1
   SCRIPT_NAME="$(basename "$0")"
-  mv "$SCRIPT_NAME" "/tmp/${SCRIPT_NAME}.old"
-  echo "[0/5] Reset repository..."
+  SCRIPT_FULL="$(realpath "$0")"
+  # Move the running script out of the repo (so it's not an untracked file)
+  mv "$SCRIPT_FULL" "/tmp/${SCRIPT_NAME}.old"
+  # Pull latest code and reset hard – deploy.sh will be recreated from the repo
+  echo "[0/5] Pull latest code..."
   git fetch --depth=1 origin main
   git reset --hard origin/main
-  # Re‑exec the updated script (now back in the repo)
-  exec bash "$SCRIPT_NAME"
+  # Re‑exec the fresh script now present in the repo
+  exec "$DEPLOY_PATH/$SCRIPT_NAME"
 fi
 
 # Install dependencies
