@@ -11,8 +11,8 @@ SCRIPT_NAME="$(basename "$0")"
 TMP_SCRIPT="/tmp/${SCRIPT_NAME}.backup"
 cp "$SCRIPT_NAME" "$TMP_SCRIPT"
 
-# Move script out of the way to avoid git conflict
-mv "$SCRIPT_NAME" "${SCRIPT_NAME}.old"
+# Remove the currently executing script (we have a backup)
+rm -f "$SCRIPT_NAME"
 # After pulling, restore the script from the backup
 cp "$TMP_SCRIPT" "$SCRIPT_NAME" || true
 rm -f "$TMP_SCRIPT"
