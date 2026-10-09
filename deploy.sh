@@ -13,8 +13,9 @@ cp "$SCRIPT_NAME" "$TMP_SCRIPT"
 
 # Move script out of the way to avoid git conflict
 mv "$SCRIPT_NAME" "${SCRIPT_NAME}.old"
-# Delete the now‑renamed script entry so git sees no deploy.sh file
-rm -f "$SCRIPT_NAME"
+# After pulling, restore the script from the backup
+cp "$TMP_SCRIPT" "$SCRIPT_NAME" || true
+rm -f "$TMP_SCRIPT"
 
 # Pull latest code safely
 echo "[1/5] Pull latest code..."
