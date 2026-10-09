@@ -6,7 +6,10 @@ DEPLOY_PATH="${DEPLOY_PATH:-/home/rizal/portofolio}"
 echo "🚀 Deploying to $DEPLOY_PATH"
 cd "$DEPLOY_PATH"
 
-echo "[1/3] Pull latest code..."
+echo "[0/4] Clean workspace..."
+# Remove any untracked files that could interfere with git reset
+git clean -fdx
+
 git fetch --depth=1 origin main
 git reset --hard origin/main
 
