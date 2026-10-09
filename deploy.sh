@@ -11,7 +11,7 @@ SCRIPT_NAME="$(basename "$0")"
 TMP_SCRIPT="/tmp/${SCRIPT_NAME}.backup"
 cp "$SCRIPT_NAME" "$TMP_SCRIPT"
 
-# Delete the currently running deploy script to avoid merge conflict
+# Delete the currently running deploy script before pulling to avoid conflict
 rm -f "$SCRIPT_NAME"
 
 
