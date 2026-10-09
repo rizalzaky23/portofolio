@@ -91,7 +91,12 @@ const projects: Project[] = [
       "/images/project/SAMUDRA/WhatsApp Image 2026-10-08 at 10.31.41 (2).jpeg",
       "/images/project/SAMUDRA/WhatsApp Image 2026-10-08 at 10.31.42.jpeg",
       "/images/project/SAMUDRA/WhatsApp Image 2026-10-08 at 10.31.42 (1).jpeg",
-      "/images/project/SAMUDRA/WhatsApp Image 2026-10-08 at 10.31.42 (2).jpeg"
+      "/images/project/SAMUDRA/WhatsApp Image 2026-10-08 at 10.31.42 (2).jpeg",
+      "/images/project/SAMUDRA/login.png",
+      "/images/project/SAMUDRA/DashboardAman.png",
+      "/images/project/SAMUDRA/History.png",
+      "/images/project/SAMUDRA/Container.png",
+      "/images/project/SAMUDRA/Container-2.png"
     ],
     tags: ["Flutter","Mobile","App"]
   },
