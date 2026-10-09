@@ -21,6 +21,14 @@ npm ci
 echo "🏗️ Building project..."
 npm run build
 
+# Copy built assets to Nginx html directory
+echo "📂 Deploying built files to /usr/share/nginx/html"
+sudo cp -r dist/* /usr/share/nginx/html/
+
+# Reload Nginx to serve the new files
+echo "🔄 Reloading Nginx"
+sudo nginx -s reload
+
 # If you use a process manager, restart it here. Example for pm2 (uncomment if applicable):
 # echo "♻️ Restarting pm2 process..."
 # pm2 reload portfolio || pm2 start npm --name portfolio -- run start
