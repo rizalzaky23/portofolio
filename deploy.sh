@@ -11,17 +11,18 @@ SCRIPT_NAME="$(basename "$0")"
 TMP_SCRIPT="/tmp/${SCRIPT_NAME}.backup"
 cp "$SCRIPT_NAME" "$TMP_SCRIPT"
 
-# Clean untracked files except this script
-echo "[0/5] Clean workspace (excluding deploy script)"
-git clean -fdx -e "$SCRIPT_NAME"
+# Move script out of the way to avoid git conflict
+mv "$SCRIPT_NAME" "${SCRIPT_NAME}.old"
+# Delete the now‑renamed script entry so git sees no deploy.sh file
+rm -f "$SCRIPT_NAME"
 
-# Pull latest code and reset hard
+# Pull latest code safely
 echo "[1/5] Pull latest code..."
 git fetch --depth=1 origin main
 # Reset will overwrite tracked files, including deploy.sh, but we have backup
 git reset --hard origin/main
 
-# Restore the script if needed (optional, not required for next run)
+# Restore the script if needed (optional)
 cp "$TMP_SCRIPT" "$SCRIPT_NAME" || true
 rm -f "$TMP_SCRIPT"
 
