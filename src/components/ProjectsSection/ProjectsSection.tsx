@@ -2,11 +2,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpRight, Folder, Award, Trophy, Code2, Calendar, Building2, Hash, X, ChevronLeft, ChevronRight, Smartphone, Monitor, Globe, Layers } from "lucide-react";
 import { MagicCard } from "../lightswind/magic-card";
 import { useState, useEffect, useCallback } from "react";
-import { Document, Page, pdfjs } from "react-pdf";
-import "react-pdf/dist/Page/AnnotationLayer.css";
-import "react-pdf/dist/Page/TextLayer.css";
-
-pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 
 // === DATA TYPES ===
 interface Project {
@@ -23,6 +18,7 @@ interface Certificate {
   id: number;
   title: string;
   image: string;
+  thumb?: string;
   issuer: string;
   year: string;
   credentialId?: string;
@@ -48,11 +44,11 @@ const projects: Project[] = [
     description:
       "A modern enterprise application built with Flutter that runs smoothly across 3 platforms (Android, Desktop, and Web). It simplifies real-time monitoring of vehicle fleet operations.",
     images: [
-      "/images/project/fleet_app/Screenshot From 2026-09-07 18-46-18.png",
-      "/images/project/fleet_app/Screenshot From 2026-09-07 18-46-09.png",
-      "/images/project/fleet_app/Screenshot From 2026-09-07 18-46-25.png",
-      "/images/project/fleet_app/Screenshot From 2026-09-07 18-46-40.png",
-      "/images/project/fleet_app/Screenshot From 2026-09-07 18-47-05.png",
+      "/images/project/fleet_app/Screenshot From 2026-09-07 18-46-18.webp",
+      "/images/project/fleet_app/Screenshot From 2026-09-07 18-46-09.webp",
+      "/images/project/fleet_app/Screenshot From 2026-09-07 18-46-25.webp",
+      "/images/project/fleet_app/Screenshot From 2026-09-07 18-46-40.webp",
+      "/images/project/fleet_app/Screenshot From 2026-09-07 18-47-05.webp",
     ],
     tags: ["Flutter", "Dart", "Android", "Desktop", "Web", "Cross-Platform", "Fleet Operations"],
   },
@@ -62,11 +58,11 @@ const projects: Project[] = [
     description:
       "A smart multiplatform cashier application built with Flutter that runs on 3 platforms (Android, Desktop, and Web). Equipped with offline mode capability using a local license cache.",
     images: [
-      "/images/project/kavier/Screenshot From 2026-09-07 19-19-33.png",
-      "/images/project/kavier/Screenshot From 2026-09-07 19-19-40.png",
-      "/images/project/kavier/Screenshot From 2026-09-07 19-19-49.png",
-      "/images/project/kavier/Screenshot From 2026-09-07 19-18-07.png",
-      "/images/project/kavier/Screenshot From 2026-09-07 19-20-25.png",
+      "/images/project/kavier/Screenshot From 2026-09-07 19-19-33.webp",
+      "/images/project/kavier/Screenshot From 2026-09-07 19-19-40.webp",
+      "/images/project/kavier/Screenshot From 2026-09-07 19-19-49.webp",
+      "/images/project/kavier/Screenshot From 2026-09-07 19-18-07.webp",
+      "/images/project/kavier/Screenshot From 2026-09-07 19-20-25.webp",
     ],
     tags: ["Flutter", "Dart", "Android", "Desktop", "Web", "Cross-Platform", "POS System"],
   },
@@ -75,10 +71,10 @@ const projects: Project[] = [
     title: "UrFarm",
     description: "UrFarm web application built with PHP, MySQL, and Tailwind CSS. Agricultural management system with comprehensive features.",
     images: [
-      "/images/project/UrFarm/image1.png",
-      "/images/project/UrFarm/image2.png",
-      "/images/project/UrFarm/image3.png",
-      "/images/project/UrFarm/image4.png"
+      "/images/project/UrFarm/image1.webp",
+      "/images/project/UrFarm/image2.webp",
+      "/images/project/UrFarm/image3.webp",
+      "/images/project/UrFarm/image4.webp"
     ],
     tags: ["PHP", "Web", "TailwindCSS", "MySQL"]
   },
@@ -87,16 +83,16 @@ const projects: Project[] = [
     title: "SAMUDRA",
     description: "SAMUDRA is a mitigation application built with Flutter for Android and iOS. A feature-rich mobile application with modern UI/UX design.",
     images: [
-      "/images/project/SAMUDRA/WhatsApp Image 2026-10-08 at 10.31.41.jpeg",
-      "/images/project/SAMUDRA/WhatsApp Image 2026-10-08 at 10.31.41 (2).jpeg",
-      "/images/project/SAMUDRA/WhatsApp Image 2026-10-08 at 10.31.42.jpeg",
-      "/images/project/SAMUDRA/WhatsApp Image 2026-10-08 at 10.31.42 (1).jpeg",
-      "/images/project/SAMUDRA/WhatsApp Image 2026-10-08 at 10.31.42 (2).jpeg",
-      "/images/project/SAMUDRA/login.png",
-      "/images/project/SAMUDRA/DashboardAman.png",
-      "/images/project/SAMUDRA/History.png",
-      "/images/project/SAMUDRA/Container.png",
-      "/images/project/SAMUDRA/Container-2.png"
+      "/images/project/SAMUDRA/WhatsApp Image 2026-10-08 at 10.31.41.webp",
+      "/images/project/SAMUDRA/WhatsApp Image 2026-10-08 at 10.31.41 (2).webp",
+      "/images/project/SAMUDRA/WhatsApp Image 2026-10-08 at 10.31.42.webp",
+      "/images/project/SAMUDRA/WhatsApp Image 2026-10-08 at 10.31.42 (1).webp",
+      "/images/project/SAMUDRA/WhatsApp Image 2026-10-08 at 10.31.42 (2).webp",
+      "/images/project/SAMUDRA/login.webp",
+      "/images/project/SAMUDRA/DashboardAman.webp",
+      "/images/project/SAMUDRA/History.webp",
+      "/images/project/SAMUDRA/Container.webp",
+      "/images/project/SAMUDRA/Container-2.webp"
     ],
     tags: ["Flutter","Mobile","App"]
   },
@@ -105,20 +101,20 @@ const projects: Project[] = [
     title: "VeternityBeraksi.com",
     description: "VeternityBeraksi.com is a competition web app, a collaboration between the Informatics and Information Systems programs at UPN Veteran Yogyakarta. Built with Next.js 16.2.6 (App Router, Turbopack), TypeScript 5.8, Drizzle ORM + PostgreSQL (Neon), Kinde Auth, Zod 4, Tailwind CSS v4, Resend, and React.",
     images: [
-      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.20.00.png",
-      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.20.24.png",
-      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.20.36.png",
-      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.20.58.png",
-      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.21.30.png",
-      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.21.41.png",
-      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.21.50.png",
-      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.22.11.png",
-      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.22.20.png",
-      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.22.27.png",
-      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.22.36.png",
-      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.22.44.png",
-      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.22.51.png",
-      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.22.59.png"
+      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.20.00.webp",
+      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.20.24.webp",
+      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.20.36.webp",
+      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.20.58.webp",
+      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.21.30.webp",
+      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.21.41.webp",
+      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.21.50.webp",
+      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.22.11.webp",
+      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.22.20.webp",
+      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.22.27.webp",
+      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.22.36.webp",
+      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.22.44.webp",
+      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.22.51.webp",
+      "/images/project/veternityberaksi.com/Screenshot 2026-10-08 at 10.22.59.webp"
     ],
     tags: ["Education", "Web", "React"]
   },
@@ -128,7 +124,7 @@ const certificates: Certificate[] = [
   {
     id: 1,
     title: "MikroTik Certified Network Associate (MTCNA)",
-    image: "/images/certificate/MTCNA.jpg",
+    image: "/images/certificate/MTCNA.webp",
     issuer: "MikroTik",
     year: "2024",
     credentialId: "2412NA2587",
@@ -136,7 +132,7 @@ const certificates: Certificate[] = [
   {
     id: 2,
     title: "MikroTik Certified Routing Engineer (MTCRE)",
-    image: "/images/certificate/MTCRE.jpg",
+    image: "/images/certificate/MTCRE.webp",
     issuer: "MikroTik",
     year: "2024",
     credentialId: "2412RE2676",
@@ -144,7 +140,7 @@ const certificates: Certificate[] = [
   {
     id: 3,
     title: "Oracle Certified Foundations Associate",
-    image: "/images/certificate/oracle.jpg",
+    image: "/images/certificate/oracle.webp",
     issuer: "Oracle",
     year: "2025",
     credentialId: "ZX66UYP1FBHJ",
@@ -153,6 +149,7 @@ const certificates: Certificate[] = [
     id: 4,
     title: "AWS Academy Cloud Foundations",
     image: "/images/certificate/AWS_Academy_Cloud_Foundations.pdf",
+    thumb: "/images/certificate/thumbs/AWS_Academy_Cloud_Foundations.webp",
     issuer: "Amazon Web Services (AWS Academy)",
     year: "2023",
   },
@@ -160,6 +157,7 @@ const certificates: Certificate[] = [
     id: 5,
     title: "Fortinet Certified Associate in Cybersecurity (FCA)",
     image: "/images/certificate/Fortinet_Certified_Associate_Cybersecurity.pdf",
+    thumb: "/images/certificate/thumbs/Fortinet_Certified_Associate_Cybersecurity.webp",
     issuer: "Fortinet",
     year: "2024",
   },
@@ -167,6 +165,7 @@ const certificates: Certificate[] = [
     id: 6,
     title: "Fortinet Certified Fundamentals in Cybersecurity (FCF)",
     image: "/images/certificate/Fortinet_Certified_Fundamentals_Cybersecurity.pdf",
+    thumb: "/images/certificate/thumbs/Fortinet_Certified_Fundamentals_Cybersecurity.webp",
     issuer: "Fortinet",
     year: "2024",
   },
@@ -174,6 +173,7 @@ const certificates: Certificate[] = [
     id: 7,
     title: "Getting Started with Cisco Packet Tracer",
     image: "/images/certificate/Cisco_Getting_Started_Packet_Tracer.pdf",
+    thumb: "/images/certificate/thumbs/Cisco_Getting_Started_Packet_Tracer.webp",
     issuer: "Cisco Networking Academy",
     year: "2024",
     credentialId: "124250081",
@@ -182,6 +182,7 @@ const certificates: Certificate[] = [
     id: 8,
     title: "Cisco Networking Basics",
     image: "/images/certificate/Cisco_Networking_Basics.pdf",
+    thumb: "/images/certificate/thumbs/Cisco_Networking_Basics.webp",
     issuer: "Cisco Networking Academy",
     year: "2024",
   },
@@ -189,6 +190,7 @@ const certificates: Certificate[] = [
     id: 9,
     title: "Ruijie Certified Network Associate (Routing & Switching)",
     image: "/images/certificate/RCNA-ROUTING.pdf",
+    thumb: "/images/certificate/thumbs/RCNA-ROUTING.webp",
     issuer: "Ruijie Networks",
     year: "2025",
   },
@@ -196,6 +198,7 @@ const certificates: Certificate[] = [
     id: 10,
     title: "Ruijie Certified Network Associate (Wireless)",
     image: "/images/certificate/RCNA-WLAN.pdf",
+    thumb: "/images/certificate/thumbs/RCNA-WLAN.webp",
     issuer: "Ruijie Networks",
     year: "2025",
   },
@@ -203,6 +206,7 @@ const certificates: Certificate[] = [
     id: 11,
     title: "BNSP Data Scientist",
     image: "/images/certificate/231070_bnsp.pdf",
+    thumb: "/images/certificate/thumbs/231070_bnsp.webp",
     issuer: "Badan Nasional Sertifikasi Profesi (BNSP)",
     year: "2023",
   },
@@ -210,6 +214,7 @@ const certificates: Certificate[] = [
     id: 12,
     title: "Cloud Practitioner Essentialst",
     image: "/images/certificate/Sertifikat_Course_251.pdf",
+    thumb: "/images/certificate/thumbs/Sertifikat_Course_251.webp",
     issuer: "Dicoding Indonesia",
     year: "2024",
   },
@@ -217,6 +222,7 @@ const certificates: Certificate[] = [
     id: 13,
     title: "Belajar Dasar-Dasar DevOps",
     image: "/images/certificate/Sertifikat_Course_382.pdf",
+    thumb: "/images/certificate/thumbs/Sertifikat_Course_382.webp",
     issuer: "Dicoding Indonesia",
     year: "2024",
   },
@@ -224,6 +230,7 @@ const certificates: Certificate[] = [
     id: 14,
     title: "AWS Cloud Practitioner Essentials",
     image: "/images/certificate/AWS_Course_Completion_1.pdf",
+    thumb: "/images/certificate/thumbs/AWS_Course_Completion_1.webp",
     issuer: "Amazon Web Services",
     year: "2024",
   },
@@ -231,6 +238,7 @@ const certificates: Certificate[] = [
     id: 15,
     title: "AWS Technical Essentials",
     image: "/images/certificate/AWS_Course_Completion_2.pdf",
+    thumb: "/images/certificate/thumbs/AWS_Course_Completion_2.webp",
     issuer: "Amazon Web Services",
     year: "2024",
   },
@@ -238,13 +246,14 @@ const certificates: Certificate[] = [
     id: 16,
     title: "How AWS Managed Service(AMS) Work Within Cloud Operating Models",
     image: "/images/certificate/AWS_Course_Completion_3.pdf",
+    thumb: "/images/certificate/thumbs/AWS_Course_Completion_3.webp",
     issuer: "Amazon Web Services",
     year: "2024",
   },
   {
     id: 17,
     title: "Foundational C# With Microsoft",
-    image: "/images/certificate/cert_screenshot.png",
+    image: "/images/certificate/cert_screenshot.webp",
     issuer: "FreeCodeCamp",
     year: "2024",
   },
@@ -255,20 +264,20 @@ const competitions: Competition[] = [
   {
     id: 1,
     title: "LKS SMK Tingkat Kabupaten Klaten — Cloud Computing",
-    image: "/images/lomba/Sertifikat_RizalZakyF_0069728882.jpg",
+    image: "/images/lomba/Sertifikat_RizalZakyF_0069728882.webp",
     organizer: "MKKS SMK Kabupaten Klaten",
     year: "2023",
     achievement: "Juara 2",
-    certificateLink: "/images/lomba/Sertifikat_RizalZakyF_0069728882.jpg",
+    certificateLink: "/images/lomba/Sertifikat_RizalZakyF_0069728882.webp",
   },
   {
     id: 2,
     title: "Olimpiade Jaringan MikroTik (OJM) SMK-TKJ Tingkat Nasional",
-    image: "/images/lomba/sertifikat-ojm-1872-6c66badab10c61f705b0.jpg",
+    image: "/images/lomba/sertifikat-ojm-1872-6c66badab10c61f705b0.webp",
     organizer: "PT Citraweb Solusi Teknologi & MikroTik",
     year: "2023",
     achievement: "Peserta Nasional",
-    certificateLink: "/images/lomba/sertifikat-ojm-1872-6c66badab10c61f705b0.jpg",
+    certificateLink: "/images/lomba/sertifikat-ojm-1872-6c66badab10c61f705b0.webp",
   },
 ];
 
@@ -628,23 +637,6 @@ const ProjectCard = ({
 
 const isPdf = (src: string) => src.toLowerCase().endsWith('.pdf');
 
-// Renders the first page of a PDF as a visual thumbnail
-const PdfThumbnail = ({ file }: { file: string }) => (
-  <Document
-    file={file}
-    loading={<div className="w-full h-full bg-slate-900 flex items-center justify-center"><span className="text-white/30 text-xs">Loading...</span></div>}
-    error={<div className="w-full h-full bg-slate-900 flex items-center justify-center"><span className="text-red-400/60 text-xs">Error</span></div>}
-  >
-    <Page
-      pageNumber={1}
-      height={192}
-      renderTextLayer={false}
-      renderAnnotationLayer={false}
-      className="!w-full [&_canvas]:!w-full [&_canvas]:!h-full [&_canvas]:object-cover"
-    />
-  </Document>
-);
-
 const CertificateCard = ({ cert, index, onImageClick }: { cert: Certificate; index: number; onImageClick: (image: string, alt: string) => void }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
@@ -666,9 +658,13 @@ const CertificateCard = ({ cert, index, onImageClick }: { cert: Certificate; ind
           rel="noopener noreferrer"
           className="relative h-48 overflow-hidden block cursor-pointer group/pdf"
         >
-          <div className="w-full h-48 overflow-hidden pointer-events-none [&_.react-pdf\_\_Page]:!w-full [&_.react-pdf\_\_Page\_canvas]:!w-full [&_.react-pdf\_\_Page\_canvas]:!h-auto">
-            <PdfThumbnail file={cert.image} />
-          </div>
+          <img
+            src={cert.thumb ?? cert.image}
+            alt={cert.title}
+            loading="lazy"
+            decoding="async"
+            className="w-full h-full object-cover opacity-80 group-hover/pdf:opacity-100 transition-opacity duration-300"
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent pointer-events-none" />
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/pdf:opacity-100 transition-opacity duration-300 pointer-events-none">
             <div className="flex items-center gap-2 bg-black/50 backdrop-blur-sm rounded-full px-4 py-2">

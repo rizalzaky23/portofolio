@@ -22,7 +22,7 @@ const educationEvents: EducationEvent[] = [
     degree: "Bachelor of Computer Science, Information Systems",
     organization: "UPN Veteran Yogyakarta",
     skills: ["Analytical Skills", "Information Systems", "Web Development", "Database Management"],
-    logo: "/images/schools/upn-veteran.png",
+    logo: "/images/schools/upn-veteran.webp",
   },
   {
     year: "2021 – 2025",
@@ -30,14 +30,14 @@ const educationEvents: EducationEvent[] = [
     degree: "Sistem Informatika Jaringan & Aplikasi",
     organization: "SMK Negeri 2 Klaten",
     skills: ["Networking", "MySQL", "Cloud (AWS / Azure)", "Programming"],
-    logo: "/images/schools/smkn2-klaten.jpg",
+    logo: "/images/schools/smkn2-klaten.webp",
   },
   {
     year: "2018 – 2021",
     title: "SMP Negeri 2 Klaten",
     organization: "SMP Negeri 2 Klaten",
     skills: ["Social Skills", "Problem Solving", "Mathematics"],
-    logo: "/images/schools/smpn2-klaten.png",
+    logo: "/images/schools/smpn2-klaten.webp",
   },
 ];
 
@@ -105,7 +105,7 @@ export const EducationSection = () => {
                     {/* Pulsing ring */}
                     <div className="absolute inset-0 w-14 h-14 rounded-full bg-primary/20 animate-ping-slow" />
                     <div className="w-14 h-14 rounded-full bg-background border-[3px] border-primary/60 flex items-center justify-center shadow-[0_0_20px_rgba(139,92,246,0.3)] relative z-10 overflow-hidden p-1.5">
-                      <img src={event.logo} alt={event.organization} className="w-full h-full object-contain" />
+                      <img src={event.logo} alt={event.organization} loading="lazy" decoding="async" className="w-full h-full object-contain" />
                     </div>
                   </motion.div>
                 </div>
@@ -121,7 +121,7 @@ export const EducationSection = () => {
                   >
                     <div className="absolute inset-0 w-10 h-10 rounded-full bg-primary/20 animate-ping-slow" />
                     <div className="w-10 h-10 rounded-full bg-background border-[3px] border-primary/60 flex items-center justify-center shadow-[0_0_15px_rgba(139,92,246,0.3)] relative z-10 overflow-hidden p-1">
-                      <img src={event.logo} alt={event.organization} className="w-full h-full object-contain" />
+                      <img src={event.logo} alt={event.organization} loading="lazy" decoding="async" className="w-full h-full object-contain" />
                     </div>
                   </motion.div>
                 </div>
@@ -156,7 +156,7 @@ export const EducationSection = () => {
                         {/* Institution Logo + Name */}
                         <div className="flex items-start gap-3 mb-3 relative z-10">
                           <div className="w-11 h-11 rounded-xl bg-white dark:bg-white/10 border border-border/30 flex items-center justify-center shrink-0 mt-0.5 p-1.5 shadow-sm">
-                            <img src={event.logo} alt={event.organization} className="w-full h-full object-contain" />
+                            <img src={event.logo} alt={event.organization} loading="lazy" decoding="async" className="w-full h-full object-contain" />
                           </div>
                           <div>
                             <h3 className="text-lg md:text-xl font-bold text-foreground tracking-tight leading-tight">

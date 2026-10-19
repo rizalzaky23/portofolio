@@ -16,7 +16,7 @@ const creativeServices: CreativeService[] = [
     title: "Web Development",
     description:
       "Building modern, performant web applications with cutting-edge JavaScript frameworks, RESTful APIs, and responsive design principles.",
-    image: "/images/service_web_dev.jpg",
+    image: "/images/service_web_dev.webp",
     color: "from-violet-500/20 to-purple-600/10",
   },
   {
@@ -24,7 +24,7 @@ const creativeServices: CreativeService[] = [
     title: "Cloud Computing",
     description:
       "Deploying and managing scalable cloud infrastructure using containerization, orchestration, and cloud-native services.",
-    image: "/images/service_cloud.jpg",
+    image: "/images/service_cloud.webp",
     color: "from-sky-500/20 to-cyan-600/10",
   },
   {
@@ -32,7 +32,7 @@ const creativeServices: CreativeService[] = [
     title: "Networking",
     description:
       "Designing and managing secure network infrastructures — from routing and switching to firewall configuration and monitoring.",
-    image: "/images/service_networking.jpg",
+    image: "/images/service_networking.webp",
     color: "from-emerald-500/20 to-green-600/10",
   },
 ];
@@ -45,32 +45,32 @@ interface TechItem {
 
 const techStack: TechItem[] = [
   // Web Development (12 items)
-  { name: "JavaScript", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg", category: "web" },
-  { name: "TypeScript", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/typescript/typescript-original.svg", category: "web" },
-  { name: "HTML5",      icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg", category: "web" },
-  { name: "CSS3",       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg", category: "web" },
-  { name: "React",      icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg", category: "web" },
-  { name: "Vue.js",     icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vuejs/vuejs-original.svg", category: "web" },
-  { name: "Next.js",    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nextjs/nextjs-original.svg", category: "web" },
-  { name: "Node.js",    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg", category: "web" },
-  { name: "Express",    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/express/express-original.svg", category: "web" },
-  { name: "Tailwind",   icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg", category: "web" },
-  { name: "MongoDB",    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mongodb/mongodb-original.svg", category: "web" },
-  { name: "Git",        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original.svg", category: "web" },
+  { name: "JavaScript", icon: "/icons/tech/javascript-original.svg", category: "web" },
+  { name: "TypeScript", icon: "/icons/tech/typescript-original.svg", category: "web" },
+  { name: "HTML5",      icon: "/icons/tech/html5-original.svg", category: "web" },
+  { name: "CSS3",       icon: "/icons/tech/css3-original.svg", category: "web" },
+  { name: "React",      icon: "/icons/tech/react-original.svg", category: "web" },
+  { name: "Vue.js",     icon: "/icons/tech/vuejs-original.svg", category: "web" },
+  { name: "Next.js",    icon: "/icons/tech/nextjs-original.svg", category: "web" },
+  { name: "Node.js",    icon: "/icons/tech/nodejs-original.svg", category: "web" },
+  { name: "Express",    icon: "/icons/tech/express-original.svg", category: "web" },
+  { name: "Tailwind",   icon: "/icons/tech/tailwindcss-original.svg", category: "web" },
+  { name: "MongoDB",    icon: "/icons/tech/mongodb-original.svg", category: "web" },
+  { name: "Git",        icon: "/icons/tech/git-original.svg", category: "web" },
   // Cloud Computing (6 items)
-  { name: "Docker",      icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/docker/docker-original.svg", category: "cloud" },
-  { name: "Kubernetes",  icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/kubernetes/kubernetes-original.svg", category: "cloud" },
-  { name: "AWS",         icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-plain-wordmark.svg", category: "cloud" },
-  { name: "Oracle Cloud",icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/oracle/oracle-original.svg", category: "cloud" },
-  { name: "Terraform",   icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/terraform/terraform-original.svg", category: "cloud" },
-  { name: "Linux",       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/linux/linux-original.svg", category: "cloud" },
+  { name: "Docker",      icon: "/icons/tech/docker-original.svg", category: "cloud" },
+  { name: "Kubernetes",  icon: "/icons/tech/kubernetes-original.svg", category: "cloud" },
+  { name: "AWS",         icon: "/icons/tech/amazonwebservices-plain-wordmark.svg", category: "cloud" },
+  { name: "Oracle Cloud",icon: "/icons/tech/oracle-original.svg", category: "cloud" },
+  { name: "Terraform",   icon: "/icons/tech/terraform-original.svg", category: "cloud" },
+  { name: "Linux",       icon: "/icons/tech/linux-original.svg", category: "cloud" },
   // Networking (6 items) — using simpleicons.org for reliable SVGs
-  { name: "Cisco",     icon: "https://cdn.simpleicons.org/cisco/1BA0D7", category: "network" },
-  { name: "MikroTik",  icon: "https://cdn.simpleicons.org/mikrotik/293239", category: "network" },
-  { name: "Wireshark", icon: "https://cdn.simpleicons.org/wireshark/1679A7", category: "network" },
-  { name: "Fortinet",  icon: "https://cdn.simpleicons.org/fortinet/EE3124", category: "network" },
-  { name: "pfSense",   icon: "https://cdn.simpleicons.org/pfsense/212121", category: "network" },
-  { name: "Ubiquiti",  icon: "https://cdn.simpleicons.org/ubiquiti/0559C9", category: "network" },
+  { name: "Cisco",     icon: "/icons/tech/cisco.svg", category: "network" },
+  { name: "MikroTik",  icon: "/icons/tech/mikrotik.svg", category: "network" },
+  { name: "Wireshark", icon: "/icons/tech/wireshark.svg", category: "network" },
+  { name: "Fortinet",  icon: "/icons/tech/fortinet.svg", category: "network" },
+  { name: "pfSense",   icon: "/icons/tech/pfsense.svg", category: "network" },
+  { name: "Ubiquiti",  icon: "/icons/tech/ubiquiti.svg", category: "network" },
 ];
 
 const categoryMeta = {

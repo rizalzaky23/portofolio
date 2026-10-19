@@ -25,4 +25,15 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "react-vendor": ["react", "react-dom"],
+          motion: ["framer-motion"],
+          "smooth-scroll": ["lenis"],
+        },
+      },
+    },
+  },
 }));
