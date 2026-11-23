@@ -16,8 +16,8 @@ export const ContactSection = () => {
         className="glass-panel p-8 md:p-12 rounded-[3rem] border border-foreground/10 relative overflow-hidden"
       >
         {/* Background Gradients */}
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/20 blur-[100px] rounded-full pointer-events-none" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-cyan-500/10 blur-[100px] rounded-full pointer-events-none" />
+        <div className="absolute -top-56 -right-56 w-[560px] h-[560px] bg-[radial-gradient(circle,rgba(139,92,246,0.22)_0%,transparent_68%)] rounded-full pointer-events-none" />
+        <div className="absolute -bottom-56 -left-56 w-[560px] h-[560px] bg-[radial-gradient(circle,rgba(6,182,212,0.12)_0%,transparent_68%)] rounded-full pointer-events-none" />
 
         <div className="relative z-10 flex flex-col md:flex-row gap-12 md:gap-24">
           

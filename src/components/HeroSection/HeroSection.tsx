@@ -10,11 +10,11 @@ import { Magnet, BlurText } from "../reactbits/effects";
 export const HeroSection = () => {
   return (
     <section id="hero" className="relative min-h-[100vh] flex flex-col pt-12 md:pt-16 overflow-hidden bg-background">
-      {/* Lightweight CSS Mesh Gradient Background */}
+      {/* Lightweight CSS Mesh Gradient Background (radial-gradient avoids heavy GPU blur passes) */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute w-[600px] h-[600px] -top-[200px] -left-[100px] rounded-full bg-violet-500/[0.07] dark:bg-violet-500/[0.12] blur-[120px] animate-[drift1_20s_ease-in-out_infinite]" />
-        <div className="absolute w-[500px] h-[500px] top-[30%] -right-[150px] rounded-full bg-sky-400/[0.06] dark:bg-sky-400/[0.10] blur-[100px] animate-[drift2_25s_ease-in-out_infinite]" />
-        <div className="absolute w-[400px] h-[400px] bottom-[10%] left-[30%] rounded-full bg-purple-500/[0.05] dark:bg-purple-500/[0.08] blur-[100px] animate-[drift3_22s_ease-in-out_infinite]" />
+        <div className="absolute w-[840px] h-[840px] -top-[320px] -left-[220px] rounded-full bg-[radial-gradient(circle,rgba(139,92,246,0.09)_0%,transparent_68%)] dark:bg-[radial-gradient(circle,rgba(139,92,246,0.14)_0%,transparent_68%)] animate-[drift1_20s_ease-in-out_infinite] will-change-transform" />
+        <div className="absolute w-[700px] h-[700px] top-[20%] -right-[250px] rounded-full bg-[radial-gradient(circle,rgba(56,189,248,0.08)_0%,transparent_68%)] dark:bg-[radial-gradient(circle,rgba(56,189,248,0.12)_0%,transparent_68%)] animate-[drift2_25s_ease-in-out_infinite] will-change-transform" />
+        <div className="absolute w-[600px] h-[600px] bottom-[0%] left-[24%] rounded-full bg-[radial-gradient(circle,rgba(168,85,247,0.06)_0%,transparent_68%)] dark:bg-[radial-gradient(circle,rgba(168,85,247,0.10)_0%,transparent_68%)] animate-[drift3_22s_ease-in-out_infinite] will-change-transform" />
       </div>
       {/* Subtle dot grid overlay */}
       <div className="absolute inset-0 bg-[radial-gradient(circle,var(--fg)_0.5px,transparent_0.5px)] [background-size:24px_24px] opacity-[0.03] dark:opacity-[0.04] pointer-events-none" />

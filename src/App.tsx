@@ -8,36 +8,49 @@ import { ProjectsSection } from "./components/ProjectsSection/ProjectsSection";
 import { EducationSection } from "./components/EducationSection/EducationSection";
 import { ContactSection } from "./components/ContactSection/ContactSection";
 import { Footer } from "./components/Footer/Footer";
-import ReactLenis from "lenis/react";
+import ReactLenis, { useLenis } from "lenis/react";
 import { Home, User, Layers, FolderKanban, GraduationCap, Send } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import Dock from "./components/lightswind/dock";
 
-function App() {
+function AppContent() {
   const [showDock, setShowDock] = useState(false);
+  const lenis = useLenis();
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
+    let rafId = 0;
 
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      const shouldShow = currentScrollY > lastScrollY && currentScrollY > window.innerHeight * 0.5;
-      const isTop = currentScrollY < window.innerHeight * 0.5;
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = 0;
+        const currentScrollY = window.scrollY;
+        const shouldShow = currentScrollY > lastScrollY && currentScrollY > window.innerHeight * 0.5;
+        const isTop = currentScrollY < window.innerHeight * 0.5;
 
-      if (shouldShow) {
-        setShowDock(true);
-      } else if (isTop) {
-        setShowDock(false);
-      }
-      lastScrollY = currentScrollY;
+        if (shouldShow) {
+          setShowDock((prev) => (prev ? prev : true));
+        } else if (isTop) {
+          setShowDock((prev) => (prev ? false : prev));
+        }
+        lastScrollY = currentScrollY;
+      });
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   const scrollToSection = (id: string) => {
+    if (lenis) {
+      lenis.scrollTo(`#${id}`, { duration: 1.2 });
+      return;
+    }
     const el = document.getElementById(id);
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -54,45 +67,51 @@ function App() {
   ];
 
   return (
-    <div className="bg-transparent min-h-screen relative overflow-x-hidden selection:bg-primary/30 selection:text-primary-foreground">
-      <ReactLenis root options={{ smoothWheel: true, duration: 1.2 }}>
-        <Header />
+    <div className="bg-transparent min-h-screen relative overflow-x-clip selection:bg-primary/30 selection:text-primary-foreground">
+      <Header />
 
-        <main className="w-full flex flex-col pt-10 border-none">
-          <HeroSection />
-          <AboutSection />
-          <ServicesSection />
-          <ProjectsSection />
-          <EducationSection />
-          <ContactSection />
-        </main>
+      <main className="w-full flex flex-col pt-10 border-none">
+        <HeroSection />
+        <AboutSection />
+        <ServicesSection />
+        <ProjectsSection />
+        <EducationSection />
+        <ContactSection />
+      </main>
 
-        {/* Footer */}
-        <Footer />
+      {/* Footer */}
+      <Footer />
 
-        {/* Floating Dock */}
-        <AnimatePresence>
-          {showDock && (
-            <motion.div
-              initial={{ y: 100, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 100, opacity: 0 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-              className="fixed bottom-2 left-0 right-0 z-[999] hidden md:block"
-            >
-              <Dock
-                items={dockItems}
-                panelHeight={56}
-                baseItemSize={44}
-                magnification={66}
-                distance={180}
-                multiBorder
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </ReactLenis>
+      {/* Floating Dock */}
+      <AnimatePresence>
+        {showDock && (
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="fixed bottom-2 left-0 right-0 z-[999] hidden md:block"
+          >
+            <Dock
+              items={dockItems}
+              panelHeight={56}
+              baseItemSize={44}
+              magnification={66}
+              distance={180}
+              multiBorder
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <ReactLenis root options={{ smoothWheel: true, lerp: 0.085, duration: 1.35, wheelMultiplier: 0.95 }}>
+      <AppContent />
+    </ReactLenis>
   );
 }
 

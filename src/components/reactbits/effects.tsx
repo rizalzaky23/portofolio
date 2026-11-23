@@ -137,47 +137,47 @@ export const Magnet = ({
   className = "",
 }: MagnetProps) => {
   const ref = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [isActive, setIsActive] = useState(false);
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!ref.current) return;
-      const { left, top, width, height } = ref.current.getBoundingClientRect();
-      const centerX = left + width / 2;
-      const centerY = top + height / 2;
-      const distX = e.clientX - centerX;
-      const distY = e.clientY - centerY;
-      const dist = Math.sqrt(distX * distX + distY * distY);
-      const maxDist = Math.max(width, height) / 2 + padding;
+    let active = false;
+    let rafId = 0;
 
-      if (dist < maxDist) {
-        setIsActive(true);
-        setPosition({
-          x: distX / strength,
-          y: distY / strength,
-        });
-      } else {
-        setIsActive(false);
-        setPosition({ x: 0, y: 0 });
-      }
+    const handleMouseMove = (e: MouseEvent) => {
+      if (rafId) return;
+      const clientX = e.clientX;
+      const clientY = e.clientY;
+      rafId = requestAnimationFrame(() => {
+        rafId = 0;
+        const el = ref.current;
+        if (!el) return;
+        const { left, top, width, height } = el.getBoundingClientRect();
+        const centerX = left + width / 2;
+        const centerY = top + height / 2;
+        const distX = clientX - centerX;
+        const distY = clientY - centerY;
+        const maxDist = Math.max(width, height) / 2 + padding;
+
+        if (distX * distX + distY * distY < maxDist * maxDist) {
+          active = true;
+          el.style.transition = "transform 0.2s ease-out";
+          el.style.transform = `translate3d(${distX / strength}px, ${distY / strength}px, 0)`;
+        } else if (active) {
+          active = false;
+          el.style.transition = "transform 0.5s ease-in-out";
+          el.style.transform = "translate3d(0px, 0px, 0)";
+        }
+      });
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, [padding, strength]);
 
   return (
-    <div
-      ref={ref}
-      className={className}
-      style={{
-        transform: `translate(${position.x}px, ${position.y}px)`,
-        transition: isActive
-          ? "transform 0.2s ease-out"
-          : "transform 0.5s ease-in-out",
-      }}
-    >
+    <div ref={ref} className={className}>
       {children}
     </div>
   );

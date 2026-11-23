@@ -18,9 +18,20 @@ export type AnimationType =
   | "swipe-down"
   | "wave-ripple";
 
-const INK_MASK_SIZE = 256;
+const INK_MASK_SIZE = 192;
 // Core solid radius is >= 0.192 of canvas width after inward noise/tendrils
 const INK_CORE_RATIO = 0.18;
+const cachedInkMasks: string[] = [];
+let inkMaskIdx = 0;
+
+function getNextInkBleedMask(): string {
+  if (cachedInkMasks.length > 0) {
+    const mask = cachedInkMasks[inkMaskIdx % cachedInkMasks.length];
+    inkMaskIdx++;
+    return mask;
+  }
+  return createInkBleedMask(Math.floor(Math.random() * 1e9) + 1);
+}
 
 /**
  * Generates an organic ink-bleed alpha mask PNG (domain-warped fBm blob +
@@ -306,7 +317,7 @@ const CloudsDecoration = () => (
 
 export function ThemeToggle({
   className,
-  duration = 2600,
+  duration = 3400,
   animationType = "ink-bleed",
   ...props
 }: ToggleThemeProps) {
@@ -338,7 +349,7 @@ export function ThemeToggle({
     return () => observer.disconnect();
   }, []);
 
-  // Inject keyframe animation + View Transition overrides
+  // Inject keyframe animation + View Transition overrides, and warm up ink masks during idle
   useEffect(() => {
     let styleElement = document.getElementById(
       "toggle-theme-vt-override"
@@ -365,6 +376,27 @@ export function ThemeToggle({
       `;
       document.head.appendChild(styleElement);
     }
+
+    if (cachedInkMasks.length >= 3) return;
+    let cancelled = false;
+    const warmUp = () => {
+      if (cancelled || cachedInkMasks.length >= 3) return;
+      const mask = createInkBleedMask(Math.floor(Math.random() * 1e9) + 1);
+      if (mask) cachedInkMasks.push(mask);
+      if (cachedInkMasks.length < 3) schedule();
+    };
+    const schedule = () => {
+      const ric = (window as Window & { requestIdleCallback?: (cb: () => void) => number }).requestIdleCallback;
+      if (ric) {
+        ric(warmUp);
+      } else {
+        setTimeout(warmUp, 200);
+      }
+    };
+    schedule();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const toggleTheme = useCallback(async () => {
@@ -403,7 +435,7 @@ export function ThemeToggle({
     const root = document.documentElement;
     const isInkBleed = currentAnimation === "ink-bleed";
     if (isInkBleed) {
-      const maskUrl = createInkBleedMask(Math.floor(Math.random() * 1e9) + 1);
+      const maskUrl = getNextInkBleedMask();
       if (maskUrl) {
         root.style.setProperty("--ink-mask", `url("${maskUrl}")`);
         root.classList.add("ink-bleed-active");
@@ -457,7 +489,7 @@ export function ThemeToggle({
           ],
           {
             duration,
-            easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+            easing: "cubic-bezier(0.37, 0, 0.2, 1)",
             pseudoElement: "::view-transition-new(root)",
             fill: "forwards",
           }

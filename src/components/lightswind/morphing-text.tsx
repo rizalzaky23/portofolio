@@ -14,14 +14,16 @@ export function MorphingText({
   morphTime = 1.5,
   cooldownTime = 0.6,
 }: MorphingTextProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const text1Ref = useRef<HTMLSpanElement>(null);
   const text2Ref = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     if (!texts || texts.length === 0) return;
 
-    let animationFrameId: number;
-    let time = new Date();
+    let animationFrameId = 0;
+    let isVisible = false;
+    let time = performance.now();
     let morph = 0;
     let cooldown = cooldownTime;
     let index = 0;
@@ -72,12 +74,15 @@ export function MorphingText({
       elts.text1.style.opacity = "0%";
     }
 
-    function animate() {
+    function animate(now: number) {
+      if (!isVisible) {
+        animationFrameId = 0;
+        return;
+      }
       animationFrameId = requestAnimationFrame(animate);
 
-      const newTime = new Date();
-      const dt = (newTime.getTime() - time.getTime()) / 1000;
-      time = newTime;
+      const dt = Math.min((now - time) / 1000, 0.1);
+      time = now;
 
       cooldown -= dt;
 
@@ -97,10 +102,24 @@ export function MorphingText({
       }
     }
 
-    animate();
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+        if (isVisible && !animationFrameId) {
+          time = performance.now();
+          animationFrameId = requestAnimationFrame(animate);
+        } else if (!isVisible && animationFrameId) {
+          cancelAnimationFrame(animationFrameId);
+          animationFrameId = 0;
+        }
+      },
+      { threshold: 0.05 }
+    );
+    if (containerRef.current) observer.observe(containerRef.current);
 
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      observer.disconnect();
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
     };
   }, [texts, morphTime, cooldownTime]);
 
@@ -109,6 +128,7 @@ export function MorphingText({
 
   return (
     <div
+      ref={containerRef}
       className={cn(
         "relative inline-flex items-center justify-center font-extrabold tracking-tight select-none",
         className
@@ -116,11 +136,11 @@ export function MorphingText({
     >
       <span
         ref={text1Ref}
-        className="absolute inset-0 flex items-center justify-center text-center transition-all duration-200"
+        className="absolute inset-0 flex items-center justify-center text-center"
       />
       <span
         ref={text2Ref}
-        className="absolute inset-0 flex items-center justify-center text-center transition-all duration-200"
+        className="absolute inset-0 flex items-center justify-center text-center"
       />
       {/* Invisible placeholder for structural spacing */}
       <span className="opacity-0 pointer-events-none px-2 py-1">
