@@ -306,7 +306,7 @@ const CloudsDecoration = () => (
 
 export function ThemeToggle({
   className,
-  duration = 1400,
+  duration = 2600,
   animationType = "ink-bleed",
   ...props
 }: ToggleThemeProps) {
@@ -457,7 +457,7 @@ export function ThemeToggle({
           ],
           {
             duration,
-            easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+            easing: "cubic-bezier(0.4, 0, 0.2, 1)",
             pseudoElement: "::view-transition-new(root)",
             fill: "forwards",
           }
